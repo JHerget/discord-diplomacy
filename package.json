@@ -1,0 +1,22 @@
+{
+  "name": "discord-diplomacy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/JHerget/discord-diplomacy.git",
+  "author": "Jordan Herget",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "discord.js": "14.16.2",
+    "moment-timezone": "0.5.45",
+    "node-cron": "3.0.3"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "format": "npx prettier --write .",
+    "register": "node deploy-commands.js"
+  },
+  "devDependencies": {
+    "prettier": "3.3.3"
+  }
+}
