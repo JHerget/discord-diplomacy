@@ -19,10 +19,9 @@ const rest = new REST().setToken(config.token);
       `Started refreshing ${commands.length} application (/) commands.`,
     );
 
-    const data = await rest.put(
-      Routes.applicationGuildCommands(config.clientId, config.guildId),
-      { body: commands },
-    );
+    const data = await rest.put(Routes.applicationCommands(config.clientId), {
+      body: commands,
+    });
 
     console.log(
       `Successfully reloaded ${data.length} application (/) commands.`,
