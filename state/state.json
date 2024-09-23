@@ -1,0 +1,198 @@
+{
+    "currentTurn": 15,
+    "inProgress": false,
+    "players": [
+        {
+            "power": "Austria-Hungary",
+            "userId": "243212904550105089"
+        },
+        {
+            "power": "Germany",
+            "userId": "450395802649493518"
+        },
+        {
+            "power": "Italy",
+            "userId": "930277948576116746"
+        }
+    ],
+    "turns": [
+        {
+            "name": "",
+            "number": 1,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 2,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 3,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 4,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 5,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 6,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 7,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 8,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 9,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 10,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 11,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 12,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "",
+            "number": 13,
+            "phase": "",
+            "orders": [],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "Fall 1907",
+            "number": 14,
+            "phase": "Gain and Lose Units",
+            "orders": [
+                {
+                    "player": {
+                        "power": "Italy",
+                        "userId": "930277948576116746"
+                    },
+                    "phase": "Diplomacy and Order Writing",
+                    "orders": [
+                        "F Wes-Mid",
+                        "A Pic-Bel",
+                        "A Bur S A Pic-Bel",
+                        "A Sil-Pru",
+                        "A Boh-Sil",
+                        "A Tyr-Boh",
+                        "F Iri-Lvp",
+                        "F Nat S F Iri-Lvp"
+                    ]
+                },
+                {
+                    "player": {
+                        "power": "Austria-Hungary",
+                        "userId": "243212904550105089"
+                    },
+                    "phase": "Diplomacy and Order Writing",
+                    "orders": [
+                        "F Con-Ank",
+                        "F Aeg-Con",
+                        "A Smy S Con-Ank",
+                        "A Gal-Ukr",
+                        "A Rum S Gal-Ukr",
+                        "A Bud-Gal",
+                        "A War S Sil-Pru",
+                        "A Mun-Ruh",
+                        "A Vie-Tyr",
+                        "A Gre H"
+                    ]
+                },
+                {
+                    "player": {
+                        "power": "Germany",
+                        "userId": "450395802649493518"
+                    },
+                    "phase": "Diplomacy and Order Writing",
+                    "orders": [
+                        "A Hol S A Pic - Bel",
+                        "F Kie H"
+                    ]
+                },
+                {
+                    "player": {
+                        "power": "Italy",
+                        "userId": "930277948576116746"
+                    },
+                    "phase": "Gain and Lose Units",
+                    "orders": [
+                        "A Rom",
+                        "A Ven"
+                    ]
+                }
+            ],
+            "retreats": [],
+            "reinforcements": []
+        },
+        {
+            "name": "Spring 1908",
+            "number": 15,
+            "phase": "Retreat and Disband",
+            "orders": []
+        }
+    ],
+    "phase": "Retreat and Disband"
+}

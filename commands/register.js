@@ -27,21 +27,31 @@ const register = {
     const availablePowers = StateManager.getAvailablePowers();
 
     if (StateManager.inProgress()) {
-      await interaction.reply("The game has already started.");
+      await interaction.reply({
+        content: "The game has already started.",
+        ephemeral: true,
+      });
       return;
     }
 
     if (StateManager.isRegistered(interaction.user.id)) {
-      await interaction.reply("You are already registered. You trynna cheat??");
+      await interaction.reply({
+        content: "You are already registered. You trynna cheat??",
+        ephemeral: true,
+      });
       return;
     }
 
     if (StateManager.registerPlayer(chosenPower, interaction.user.id)) {
-      await interaction.reply(`You are registered as ${chosenPower}!`);
+      await interaction.reply({
+        content: `You are registered as ${chosenPower}!`,
+        ephemeral: true,
+      });
     } else {
-      await interaction.reply(
-        `Someone is already registered as ${chosenPower} *womp womp*\n\nAvailable great powers: ${availablePowers.join(", ")}`,
-      );
+      await interaction.reply({
+        content: `Someone is already registered as ${chosenPower} *womp womp*\n\nAvailable great powers: ${availablePowers.join(", ")}`,
+        ephemeral: true,
+      });
     }
   },
 };

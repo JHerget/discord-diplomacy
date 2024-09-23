@@ -26,8 +26,6 @@ export class Turn {
     this.number = number;
     this.phase = Phase.Diplomatic;
     this.orders = [];
-    this.retreats = [];
-    this.reinforcements = [];
   }
 }
 

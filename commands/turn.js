@@ -8,9 +8,10 @@ const turn = {
   async execute(interaction) {
     const turn = StateManager.getCurrentTurn();
 
-    await interaction.reply(
-      `## ${turn.name}\nPhase: ${turn.phase}\nOrders received: ${turn.orders.join(", ")}`,
-    );
+    await interaction.reply({
+      content: `## ${turn.name}\nPhase: ${turn.phase}\nOrders received: ${turn.orders.join(", ")}`,
+      ephemeral: true,
+    });
   },
 };
 

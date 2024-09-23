@@ -23,18 +23,20 @@ const ordersModal = {
   name: "orders-modal",
   data: modal,
   async execute(interaction) {
-    const powerName = StateManager.getPowerName(interaction.user.id);
     const turn = StateManager.getCurrentTurn();
     const orders = interaction.fields.getTextInputValue("orders").split("\n");
 
     if (StateManager.addOrders(interaction.user.id, orders)) {
-      await interaction.reply(
-        `${powerName}'s orders have been submitted for the '${turn.phase}' phase of ${turn.name}!`,
-      );
+      await interaction.reply({
+        content: `Your orders have been submitted for the '${turn.phase}' phase of ${turn.name}!`,
+        ephemeral: true,
+      });
     } else {
-      await interaction.reply(
-        "One or more of your orders were formatted incorrectly. Please try again...or don't and just let Italy win.",
-      );
+      await interaction.reply({
+        content:
+          "One or more of your orders were formatted incorrectly. Please try again...or don't and just let Italy win.",
+        ephemeral: true,
+      });
     }
   },
 };

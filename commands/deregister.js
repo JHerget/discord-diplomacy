@@ -7,16 +7,18 @@ const deregister = {
     .setDescription("Remove yourself from the game."),
   async execute(interaction) {
     if (!StateManager.isRegistered(interaction.user.id)) {
-      await interaction.reply(
-        "Silly goose, you're not even registered in this game!",
-      );
+      await interaction.reply({
+        content: "Silly goose, you're not even registered in this game!",
+        ephemeral: true,
+      });
       return;
     }
 
     StateManager.deregisterPlayer(interaction.user.id);
-    await interaction.reply(
-      "You have successfully been removed from the game.",
-    );
+    await interaction.reply({
+      content: "You have successfully been removed from the game.",
+      ephemeral: true,
+    });
   },
 };
 

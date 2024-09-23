@@ -8,7 +8,10 @@ const orders = {
     .setDescription("Produces a form to submit the orders for your units."),
   async execute(interaction) {
     if (!StateManager.isRegistered(interaction.user.id)) {
-      await interaction.reply("You are not a registered player!");
+      await interaction.reply({
+        content: "You are not a registered player!",
+        ephemeral: true,
+      });
       return;
     }
 

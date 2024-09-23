@@ -22,7 +22,7 @@ class GameStateManager {
   addOrders(userId, orders) {
     const turn = this.game.turns[this.game.currentTurn - 1];
     const newOrders = new Orders(
-      new Player(this.getPowerName(), userId),
+      new Player(this.getPowerName(userId), userId),
       turn.phase,
       orders,
     );
@@ -112,7 +112,7 @@ class GameStateManager {
 
   getTurnName() {
     const turn = this.game.currentTurn;
-    const year = 1901 + Math.floor(turn / 2);
+    const year = 1900 + Math.ceil(turn / 2);
     const season = turn % 2 == 1 ? "Spring" : "Fall";
 
     return `${season} ${year}`;
@@ -142,25 +142,12 @@ class GameStateManager {
 
   getCurrentTurn() {
     const turn = this.game.turns[this.game.currentTurn - 1];
-    let turnData = {
+
+    return {
       name: turn.name,
       phase: turn.phase,
-      orders: [],
+      orders: this.getOrders().map((order) => order.player.power),
     };
-
-    switch (turn.phase) {
-      case Phase.Diplomatic:
-        turnData.orders = turn.orders.map((order) => order.power);
-        break;
-      case Phase.Retreat:
-        turnData.orders = turn.retreats.map((order) => order.power);
-        break;
-      case Phase.Reinforce:
-        turnData.orders = turn.reinforcements.map((order) => order.power);
-        break;
-    }
-
-    return turnData;
   }
 
   getCurrentPhase() {
@@ -168,16 +155,19 @@ class GameStateManager {
   }
 
   nextPhase() {
-    const turn = this.game.turns[this.game.currentTurn - 1];
-
-    switch (turn.phase) {
+    switch (this.game.turns[this.game.currentTurn - 1].phase) {
       case Phase.Diplomatic:
-        this.game.phase = Phase.Retreat;
+        this.game.turns[this.game.currentTurn - 1].phase = Phase.Retreat;
         this.saveState();
         break;
       case Phase.Retreat:
-        this.game.phase = Phase.Reinforce;
-        this.saveState();
+        if (this.game.currentTurn % 2 == 0) {
+          this.game.turns[this.game.currentTurn - 1].phase = Phase.Reinforce;
+          this.saveState();
+        } else {
+          this.newTurn();
+        }
+
         break;
       case Phase.Reinforce:
         this.newTurn();
