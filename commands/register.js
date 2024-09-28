@@ -1,34 +1,26 @@
 import { SlashCommandBuilder } from "discord.js";
 import StateManager from "../state/state-manager.js";
+import ServerManager from "../server/server-manager.js";
 
 const register = {
   data: new SlashCommandBuilder()
     .setName("register")
-    .setDescription("Register yourself as a player in the game.")
-    .addStringOption((option) =>
-      option
-        .setName("great-power-name")
-        .setDescription(
-          "This is the name of the great power you wish to register as.",
-        )
-        .setRequired(true)
-        .addChoices(
-          { name: "Austria-Hungary", value: "Austria-Hungary" },
-          { name: "England", value: "England" },
-          { name: "France", value: "France" },
-          { name: "Germany", value: "Germany" },
-          { name: "Italy", value: "Italy" },
-          { name: "Russia", value: "Russia" },
-          { name: "Turkey", value: "Turkey" },
-        ),
-    ),
+    .setDescription("Register yourself as a player in the game."),
   async execute(interaction) {
-    const chosenPower = interaction.options.getString("great-power-name");
     const availablePowers = StateManager.getAvailablePowers();
+    const randomIndex = Math.floor(Math.random() * availablePowers.length);
 
     if (StateManager.inProgress()) {
       await interaction.reply({
         content: "The game has already started.",
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (availablePowers.length <= 0) {
+      await interaction.reply({
+        content: "No more players can be added to the game.",
         ephemeral: true,
       });
       return;
@@ -42,16 +34,31 @@ const register = {
       return;
     }
 
-    if (StateManager.registerPlayer(chosenPower, interaction.user.id)) {
-      await interaction.reply({
-        content: `You are registered as ${chosenPower}!`,
-        ephemeral: true,
-      });
-    } else {
-      await interaction.reply({
-        content: `Someone is already registered as ${chosenPower} *womp womp*\n\nAvailable great powers: ${availablePowers.join(", ")}`,
-        ephemeral: true,
-      });
+    const chosenPower = availablePowers[randomIndex];
+
+    if (StateManager.registerPlayer(chosenPower, interaction.user)) {
+      await interaction.reply(
+        `${interaction.user.globalName} is registered as ${chosenPower}!`,
+      );
+
+      try {
+        await interaction.member.roles.add(ServerManager.greatPowerRole);
+      } catch(error) {
+        console.log(error);
+        await interaction.followUp({
+          content: `I was unable to grant you the role of 'Great Power'. You'll have to ask the game admin to help you 😔.`,
+          ephemeral: true,
+        });
+      }
+
+      try {
+        await interaction.member.setNickname(chosenPower);
+      } catch {
+        await interaction.followUp({
+          content: `I was unable to change your nickname to ${chosenPower} so you'll have to do it yourself 😔.`,
+          ephemeral: true,
+        });
+      }
     }
   },
 };

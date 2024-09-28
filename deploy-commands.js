@@ -4,12 +4,14 @@ import orders from "./commands/orders.js";
 import register from "./commands/register.js";
 import deregister from "./commands/deregister.js";
 import turn from "./commands/turn.js";
+import players from "./commands/players.js";
 
 const commands = [
   orders.data.toJSON(),
   register.data.toJSON(),
   deregister.data.toJSON(),
   turn.data.toJSON(),
+  players.data.toJSON(),
 ];
 const rest = new REST().setToken(config.token);
 

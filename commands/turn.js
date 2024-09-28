@@ -7,9 +7,10 @@ const turn = {
     .setDescription("Gives the details about the current turn."),
   async execute(interaction) {
     const turn = StateManager.getCurrentTurn();
+    const people = StateManager.getOrders().map((order) => order.player.power);
 
     await interaction.reply({
-      content: `## ${turn.name}\nPhase: ${turn.phase}\nOrders received: ${turn.orders.join(", ")}`,
+      content: `## ${turn.name}\nPhase: ${turn.phase}\nOrders received: ${people.join(", ")}`,
       ephemeral: true,
     });
   },

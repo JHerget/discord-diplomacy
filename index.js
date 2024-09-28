@@ -4,14 +4,16 @@ import orders from "./commands/orders.js";
 import register from "./commands/register.js";
 import deregister from "./commands/deregister.js";
 import turn from "./commands/turn.js";
+import players from "./commands/players.js";
 import ordersModal from "./modals/orders-modal.js";
-import onReady from "./events/ready.js";
+import onReady from "./events/on-ready.js";
 import commandInteraction from "./events/command-interaction.js";
 import modalInteraction from "./events/modal-interaction.js";
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
   ],
@@ -22,6 +24,7 @@ client.commands.set(orders.data.name, orders);
 client.commands.set(register.data.name, register);
 client.commands.set(deregister.data.name, deregister);
 client.commands.set(turn.data.name, turn);
+client.commands.set(players.data.name, players);
 
 client.modals = new Collection();
 client.modals.set(ordersModal.name, ordersModal);

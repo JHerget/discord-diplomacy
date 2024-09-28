@@ -65,7 +65,7 @@ class GameStateManager {
     return isRegistered;
   }
 
-  registerPlayer(power, userId) {
+  registerPlayer(power, user) {
     let canRegister = true;
 
     this.game.players.forEach((player) => {
@@ -79,7 +79,7 @@ class GameStateManager {
       return false;
     }
 
-    this.game.players.push(new Player(power, userId));
+    this.game.players.push(new Player(power, user.globalName, user.id));
     this.saveState();
 
     return true;
@@ -95,6 +95,10 @@ class GameStateManager {
         return;
       }
     }
+  }
+
+  getAllPlayers() {
+    return this.game.players;
   }
 
   getPowerName(userId) {
@@ -141,35 +145,24 @@ class GameStateManager {
   }
 
   getCurrentTurn() {
-    const turn = this.game.turns[this.game.currentTurn - 1];
-
-    return {
-      name: turn.name,
-      phase: turn.phase,
-      orders: this.getOrders().map((order) => order.player.power),
-    };
+    return this.game.turns[this.game.currentTurn - 1];
   }
 
   getCurrentPhase() {
-    return this.game.turns[this.game.currentTurn - 1].phase;
+    return this.getCurrentTurn().phase;
+  }
+
+  setCurrentPhase(phase) {
+    this.game.turns[this.game.currentTurn - 1].phase = phase;
+    this.saveState();
   }
 
   nextPhase() {
-    switch (this.game.turns[this.game.currentTurn - 1].phase) {
+    switch (this.getCurrentPhase()) {
       case Phase.Diplomatic:
-        this.game.turns[this.game.currentTurn - 1].phase = Phase.Retreat;
-        this.saveState();
+        this.setCurrentPhase(Phase.RetreatAndReinforce);
         break;
-      case Phase.Retreat:
-        if (this.game.currentTurn % 2 == 0) {
-          this.game.turns[this.game.currentTurn - 1].phase = Phase.Reinforce;
-          this.saveState();
-        } else {
-          this.newTurn();
-        }
-
-        break;
-      case Phase.Reinforce:
+      case Phase.RetreatAndReinforce:
         this.newTurn();
         break;
     }
@@ -184,6 +177,41 @@ class GameStateManager {
 
   inProgress() {
     return this.game.inProgress;
+  }
+
+  getDaysPerTurn() {
+    return this.game.daysPerTurn;
+  }
+
+  allOrdersSubmitted() {
+    const ordersReceived = new Set(
+      this.getOrders()
+        .filter((order) => order.player.active)
+        .map((order) => order.player.userId),
+    );
+    const registeredPlayers = new Set(
+      this.game.players.map((player) => player.userId),
+    );
+
+    return ordersReceived.size >= registeredPlayers.size;
+  }
+
+  incrementDaysOnTurn() {
+    this.game.turns[this.game.currentTurn - 1].daysOnTurn += 1;
+  }
+
+  getOrdersMessage() {
+    const turn = this.getCurrentTurn();
+
+    const orders = this.getOrders();
+    let message = `## ${turn.name}\n${turn.phase}\n\n`;
+
+    for (const order of orders) {
+      message += `**${order.player.power}**\n`;
+      message += `${order.orders.join("\n")}\n\n`;
+    }
+
+    return message;
   }
 }
 

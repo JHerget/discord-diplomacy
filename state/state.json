@@ -1,18 +1,25 @@
 {
-    "currentTurn": 15,
+    "currentTurn": 14,
     "inProgress": false,
+    "daysPerTurn": 3,
     "players": [
         {
             "power": "Austria-Hungary",
-            "userId": "243212904550105089"
+            "globalName": "Simsulator",
+            "userId": "243212904550105089",
+            "active": true
         },
         {
             "power": "Germany",
-            "userId": "450395802649493518"
+            "globalName": "DriedUpInk",
+            "userId": "450395802649493518",
+            "active": true
         },
         {
             "power": "Italy",
-            "userId": "930277948576116746"
+            "globalName": "jtherget",
+            "userId": "930277948576116746",
+            "active": true
         }
     ],
     "turns": [
@@ -123,12 +130,15 @@
         {
             "name": "Fall 1907",
             "number": 14,
-            "phase": "Gain and Lose Units",
+            "daysOnTurn": 0,
+            "phase": "Diplomacy and Order Writing",
             "orders": [
                 {
                     "player": {
                         "power": "Italy",
-                        "userId": "930277948576116746"
+                        "globalName": "jtherget",
+                        "userId": "930277948576116746",
+                        "active": true
                     },
                     "phase": "Diplomacy and Order Writing",
                     "orders": [
@@ -145,7 +155,9 @@
                 {
                     "player": {
                         "power": "Austria-Hungary",
-                        "userId": "243212904550105089"
+                        "globalName": "Simsulator",
+                        "userId": "243212904550105089",
+                        "active": true
                     },
                     "phase": "Diplomacy and Order Writing",
                     "orders": [
@@ -164,7 +176,9 @@
                 {
                     "player": {
                         "power": "Germany",
-                        "userId": "450395802649493518"
+                        "globalName": "DriedUpInk",
+                        "userId": "450395802649493518",
+                        "active": true
                     },
                     "phase": "Diplomacy and Order Writing",
                     "orders": [
@@ -175,9 +189,11 @@
                 {
                     "player": {
                         "power": "Italy",
-                        "userId": "930277948576116746"
+                        "globalName": "jtherget",
+                        "userId": "930277948576116746",
+                        "active": true
                     },
-                    "phase": "Gain and Lose Units",
+                    "phase": "Retreat and Reinforce",
                     "orders": [
                         "A Rom",
                         "A Ven"
@@ -186,13 +202,6 @@
             ],
             "retreats": [],
             "reinforcements": []
-        },
-        {
-            "name": "Spring 1908",
-            "number": 15,
-            "phase": "Retreat and Disband",
-            "orders": []
         }
-    ],
-    "phase": "Retreat and Disband"
+    ]
 }
