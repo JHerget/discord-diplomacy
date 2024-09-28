@@ -14,7 +14,9 @@ const onReady = {
       client.channels.cache.find((ch) => ch.name === "orders"),
     );
     ServerManager.setGreatPowerRole(
-      client.guilds.cache.first().roles.cache.find(role => role.name == "Great Power")
+      client.guilds.cache
+        .first()
+        .roles.cache.find((role) => role.name == "Great Power"),
     );
 
     phaseJob.start();

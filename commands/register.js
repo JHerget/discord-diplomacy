@@ -43,7 +43,7 @@ const register = {
 
       try {
         await interaction.member.roles.add(ServerManager.greatPowerRole);
-      } catch(error) {
+      } catch (error) {
         console.log(error);
         await interaction.followUp({
           content: `I was unable to grant you the role of 'Great Power'. You'll have to ask the game admin to help you 😔.`,
