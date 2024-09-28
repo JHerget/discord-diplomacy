@@ -9,7 +9,8 @@
   "dependencies": {
     "discord.js": "14.16.2",
     "moment-timezone": "0.5.45",
-    "node-cron": "3.0.3"
+    "node-cron": "3.0.3",
+    "pm2": "5.4.2"
   },
   "scripts": {
     "start": "node index.js",
