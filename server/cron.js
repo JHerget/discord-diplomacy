@@ -15,7 +15,7 @@ const phaseJob = cron.schedule("0 * * * *", () => {
     const allOrdersSubmitted = StateManager.allOrdersSubmitted();
 
     if (daysOnTurn == daysPerTurn || allOrdersSubmitted) {
-      ordersChannel.send(StateManager.getOrdersMessage());
+      ServerManager.ordersChannel.send(StateManager.getOrdersMessage());
       StateManager.nextPhase();
       ServerManager.gameStateChannel.send(
         `We are now on the '${StateManager.getCurrentPhase()}' phase of ${turn.name}! Orders for this phase are due by midnight.`,

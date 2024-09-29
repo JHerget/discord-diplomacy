@@ -198,6 +198,7 @@ class GameStateManager {
 
   incrementDaysOnTurn() {
     this.game.turns[this.game.currentTurn - 1].daysOnTurn += 1;
+    this.saveState();
   }
 
   getOrdersMessage() {
