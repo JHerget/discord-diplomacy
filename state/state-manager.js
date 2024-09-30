@@ -190,7 +190,9 @@ class GameStateManager {
         .map((order) => order.player.userId),
     );
     const registeredPlayers = new Set(
-      this.game.players.map((player) => player.userId),
+      this.game.players
+        .filter((player) => player.active)
+        .map((player) => player.userId),
     );
 
     return ordersReceived.size >= registeredPlayers.size;

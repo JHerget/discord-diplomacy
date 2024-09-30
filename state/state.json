@@ -130,7 +130,7 @@
         {
             "name": "Fall 1907",
             "number": 14,
-            "daysOnTurn": 0,
+            "daysOnTurn": 1,
             "phase": "Diplomacy and Order Writing",
             "orders": [
                 {
