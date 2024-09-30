@@ -4,7 +4,7 @@ import StateManager from "../state/state-manager.js";
 import { Phase } from "../state/state-models.js";
 import ServerManager from "./server-manager.js";
 
-const phaseJob = cron.schedule("* * * * *", () => {
+const phaseJob = cron.schedule("0 * * * *", () => {
   const currentTime = moment().tz("America/Denver").format("HH:mm");
   const phase = StateManager.getCurrentPhase();
 
