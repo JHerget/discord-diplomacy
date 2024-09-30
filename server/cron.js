@@ -2,8 +2,9 @@ import cron from "node-cron";
 import moment from "moment-timezone";
 import StateManager from "../state/state-manager.js";
 import { Phase } from "../state/state-models.js";
+import ServerManager from "./server-manager.js";
 
-const phaseJob = cron.schedule("0 * * * *", () => {
+const phaseJob = cron.schedule("* * * * *", () => {
   const currentTime = moment().tz("America/Denver").format("HH:mm");
   const phase = StateManager.getCurrentPhase();
 

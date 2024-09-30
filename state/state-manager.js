@@ -86,15 +86,20 @@ class GameStateManager {
   }
 
   deregisterPlayer(userId) {
-    const players = this.game.players;
-
-    for (let i = 0; i < players.length; i++) {
-      if (players[i].userId === userId) {
-        this.game.players.splice(i, 1);
-        this.saveState();
-        return;
+    for (let player of this.game.players) {
+      if (player.userId === userId) {
+        player.active = false;
+        break;
       }
     }
+
+    for (let order of this.game.turns[this.game.currentTurn - 1].orders) {
+      if (order.player.userId === userId) {
+        order.player.active = false;
+      }
+    }
+
+    this.saveState();
   }
 
   getAllPlayers() {
@@ -195,7 +200,7 @@ class GameStateManager {
         .map((player) => player.userId),
     );
 
-    return ordersReceived.size >= registeredPlayers.size;
+    return ordersReceived.size == registeredPlayers.size;
   }
 
   incrementDaysOnTurn() {

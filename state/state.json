@@ -130,7 +130,7 @@
         {
             "name": "Fall 1907",
             "number": 14,
-            "daysOnTurn": 1,
+            "daysOnTurn": 0,
             "phase": "Diplomacy and Order Writing",
             "orders": [
                 {
@@ -202,6 +202,13 @@
             ],
             "retreats": [],
             "reinforcements": []
+        },
+        {
+            "name": "Spring 1908",
+            "number": 15,
+            "daysOnTurn": 3,
+            "phase": "Retreat and Reinforce",
+            "orders": []
         }
     ]
 }
