@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import StateManager from "../state/state-manager.js";
-import ServerManager from "../server/server-manager.js";
+import StateManager from "../managers/state/state-manager.js";
+import ServerManager from "../managers/server/server-manager.js";
 
 const register = {
   data: new SlashCommandBuilder()

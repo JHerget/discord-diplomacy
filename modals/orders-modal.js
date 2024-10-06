@@ -4,7 +4,8 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import StateManager from "../state/state-manager.js";
+import StateManager from "../managers/state/state-manager.js";
+import { OrderManager } from "../managers/order/order-manager.js";
 
 const orders = new TextInputBuilder()
   .setCustomId("orders")
@@ -14,6 +15,7 @@ const orders = new TextInputBuilder()
   .setPlaceholder("F Nap-Tys\nA Rom-Tus");
 
 const ordersActionRow = new ActionRowBuilder().addComponents(orders);
+
 const modal = new ModalBuilder()
   .setCustomId("orders-modal")
   .setTitle("Orders")
@@ -24,20 +26,31 @@ const ordersModal = {
   data: modal,
   async execute(interaction) {
     const turn = StateManager.getCurrentTurn();
-    const orders = interaction.fields.getTextInputValue("orders").split("\n");
+    const rawOrders = interaction.fields
+      .getTextInputValue("orders")
+      .trim()
+      .split("\n");
+    let formattedOrders = [];
 
-    if (StateManager.addOrders(interaction.user.id, orders)) {
-      await interaction.reply({
-        content: `Your orders have been submitted for the '${turn.phase}' phase of ${turn.name}!`,
-        ephemeral: true,
-      });
-    } else {
-      await interaction.reply({
-        content:
-          "One or more of your orders were formatted incorrectly. Please try again...or don't and just let Italy win.",
-        ephemeral: true,
-      });
+    for (const order of rawOrders) {
+      if (OrderManager.isOrderFormatValid(order)) {
+        formattedOrders.push(OrderManager.parseOrder(order));
+      } else {
+        await interaction.reply({
+          content: `This order is invalid for the current phase or is formatted incorrectly: \`${order}\`. Use the \`/format\` command to review the correct formats for all order types.`,
+          ephemeral: true,
+        });
+
+        return;
+      }
     }
+
+    StateManager.addOrders(interaction.user.id, formattedOrders);
+
+    await interaction.reply({
+      content: `Your orders have been submitted for the '${turn.phase}' phase of ${turn.name}!`,
+      ephemeral: true,
+    });
   },
 };
 

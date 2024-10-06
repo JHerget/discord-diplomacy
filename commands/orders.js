@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import StateManager from "../state/state-manager.js";
+import StateManager from "../managers/state/state-manager.js";
 import ordersModal from "../modals/orders-modal.js";
 
 const orders = {

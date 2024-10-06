@@ -1,6 +1,6 @@
 import { Events } from "discord.js";
-import ServerManager from "../server/server-manager.js";
-import phaseJob from "../server/cron.js";
+import ServerManager from "../managers/server/server-manager.js";
+import phaseJob from "../managers/server/cron.js";
 
 const onReady = {
   name: Events.ClientReady,

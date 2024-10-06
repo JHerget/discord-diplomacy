@@ -5,6 +5,7 @@ import register from "./commands/register.js";
 import deregister from "./commands/deregister.js";
 import turn from "./commands/turn.js";
 import players from "./commands/players.js";
+import format from "./commands/format.js";
 
 const commands = [
   orders.data.toJSON(),
@@ -12,6 +13,7 @@ const commands = [
   deregister.data.toJSON(),
   turn.data.toJSON(),
   players.data.toJSON(),
+  format.data.toJSON(),
 ];
 const rest = new REST().setToken(config.token);
 

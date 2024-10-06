@@ -5,6 +5,7 @@ import register from "./commands/register.js";
 import deregister from "./commands/deregister.js";
 import turn from "./commands/turn.js";
 import players from "./commands/players.js";
+import format from "./commands/format.js";
 import ordersModal from "./modals/orders-modal.js";
 import onReady from "./events/on-ready.js";
 import commandInteraction from "./events/command-interaction.js";
@@ -25,6 +26,7 @@ client.commands.set(register.data.name, register);
 client.commands.set(deregister.data.name, deregister);
 client.commands.set(turn.data.name, turn);
 client.commands.set(players.data.name, players);
+client.commands.set(format.data.name, format);
 
 client.modals = new Collection();
 client.modals.set(ordersModal.name, ordersModal);

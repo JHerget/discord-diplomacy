@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import StateManager from "../state/state-manager.js";
+import StateManager from "../managers/state/state-manager.js";
 
 const turn = {
   data: new SlashCommandBuilder()
@@ -7,10 +7,18 @@ const turn = {
     .setDescription("Gives the details about the current turn."),
   async execute(interaction) {
     const turn = StateManager.getCurrentTurn();
-    const people = StateManager.getOrders().map((order) => order.player.power);
+    const orders = StateManager.getOrders();
+    const people = orders.map((order) => order.player.power);
+    const playerOrders = orders
+      .filter(
+        (order) =>
+          order.phase == turn.phase &&
+          order.player.userId == interaction.user.id,
+      )
+      .map((order) => order.orders.join("\n"));
 
     await interaction.reply({
-      content: `## ${turn.name}\nPhase: ${turn.phase}\nOrders received: ${people.join(", ")}`,
+      content: `## ${turn.name}\nPhase: ${turn.phase}\nOrders received: ${people.join(", ")}\n\nYour orders:\n${playerOrders.join("\n")}`,
       ephemeral: true,
     });
   },

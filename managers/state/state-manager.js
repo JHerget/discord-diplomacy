@@ -3,7 +3,7 @@ import { Game, Orders, Phase, Player, Turn } from "./state-models.js";
 
 class GameStateManager {
   constructor() {
-    this.stateFile = "./state/state.json";
+    this.stateFile = "./managers/state/state.json";
     this.game = new Game();
 
     try {
@@ -42,8 +42,6 @@ class GameStateManager {
     }
 
     this.saveState();
-
-    return true;
   }
 
   getOrders() {
