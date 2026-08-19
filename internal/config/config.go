@@ -7,13 +7,11 @@ import (
 	"strings"
 )
 
-// Config contains the values needed to connect to Discord and register guild commands.
 type Config struct {
 	BotToken string
 	GuildID  string
 }
 
-// Load reads and validates configuration from the process environment.
 func Load() (Config, error) {
 	cfg := Config{
 		BotToken: strings.TrimSpace(os.Getenv("DISCORD_BOT_TOKEN")),

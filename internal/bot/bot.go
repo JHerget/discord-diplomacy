@@ -18,7 +18,6 @@ type Bot struct {
 	logger   *slog.Logger
 }
 
-// New creates the Discord session and registers every supplied feature module.
 func New(cfg config.Config, logger *slog.Logger, modules ...interactions.Module) (*Bot, error) {
 	registry := interactions.NewRegistry()
 	for _, module := range modules {
@@ -48,7 +47,6 @@ func New(cfg config.Config, logger *slog.Logger, modules ...interactions.Module)
 	return bot, nil
 }
 
-// Run connects to Discord, synchronizes guild commands, and waits for cancellation.
 func (b *Bot) Run(ctx context.Context) error {
 	if err := b.session.Open(); err != nil {
 		return fmt.Errorf("open Discord session: %w", err)
