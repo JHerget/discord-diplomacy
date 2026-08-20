@@ -22,11 +22,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	sharedCfg, err := config.LoadShared(cfg.GuildID)
+	if err != nil {
+		logger.Error("invalid state file", "error", err)
+		os.Exit(1)
+	}
+
 	application, err := bot.New(
 		cfg,
 		logger,
-		ping.New(),
-		feedback.New(),
+		ping.New(sharedCfg),
+		feedback.New(sharedCfg),
 	)
 	if err != nil {
 		logger.Error("create bot", "error", err)

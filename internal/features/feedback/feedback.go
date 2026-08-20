@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"discord-diplomacy/internal/config"
 	"discord-diplomacy/internal/interactions"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -13,13 +15,17 @@ const (
 	inputCustomID = "feedback:message"
 )
 
-type Module struct{}
-
-func New() Module {
-	return Module{}
+type Module struct {
+	cfg *config.Shared
 }
 
-func (Module) Register(registry *interactions.Registry) error {
+func New(cfg *config.Shared) Module {
+	return Module{
+		cfg: cfg,
+	}
+}
+
+func (m Module) Register(registry *interactions.Registry) error {
 	if err := registry.RegisterCommand(&discordgo.ApplicationCommand{
 		Name:        "feedback",
 		Description: "Open the feedback form",
