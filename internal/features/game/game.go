@@ -10,21 +10,19 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-type subcommandHandler func(
-	*discordgo.Session,
-	*discordgo.InteractionCreate,
-	*discordgo.ApplicationCommandInteractionDataOption,
-) error
+type Handler interface {
+	Handle(session *discordgo.Session, interaction *discordgo.InteractionCreate) error
+}
 
 type Module struct {
 	cfg      *config.Shared
-	handlers map[string]subcommandHandler
+	handlers map[string]Handler
 }
 
 func New(cfg *config.Shared) Module {
 	m := Module{
 		cfg:      cfg,
-		handlers: make(map[string]subcommandHandler),
+		handlers: make(map[string]Handler),
 	}
 	m.handlers[createSubcommandName] = m.handleCreate
 	m.handlers[joinSubcommandName] = m.handleJoin

@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-type Module struct {}
+type Module struct{}
 
 func New(cfg *config.Shared) Module {
 	return Module{}
