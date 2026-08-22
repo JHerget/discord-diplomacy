@@ -1,25 +1,14 @@
 package game
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"discord-diplomacy/internal/types"
+	"discord-diplomacy/internal/utils"
+)
 
-const statusSubcommandName = "status"
-
-func statusSubcommand() *discordgo.ApplicationCommandOption {
-	return &discordgo.ApplicationCommandOption{
-		Type:        discordgo.ApplicationCommandOptionSubCommand,
-		Name:        statusSubcommandName,
-		Description: "Show the active game",
-	}
-}
-
-func (m Module) handleStatus(
-	session *discordgo.Session,
-	interaction *discordgo.InteractionCreate,
-	_ *discordgo.ApplicationCommandInteractionDataOption,
-) error {
-	if m.cfg == nil || m.cfg.ActiveGame == nil {
-		return respondEphemeral(session, interaction, "There is no active game.")
-	}
-
-	return respondEphemeral(session, interaction, "Active game: "+*m.cfg.ActiveGame)
+var StatusSubcommand = types.Subcommand{
+	Name:        "status",
+	Description: "Get the status of the current game",
+	Handler: func(cctx *utils.CommandContext) error {
+		return cctx.BasicEphemeralResponse("Get the status of the current game")
+	},
 }

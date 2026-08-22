@@ -9,15 +9,12 @@ import (
 
 var ErrHandlerNotFound = errors.New("interaction handler not found")
 
-// Handler handles one Discord interaction.
 type Handler func(*discordgo.Session, *discordgo.InteractionCreate) error
 
-// Module adds a self-contained set of commands and modal handlers to a Registry.
 type Module interface {
 	Register(*Registry) error
 }
 
-// Registry stores application command definitions and routes incoming interactions.
 type Registry struct {
 	commands        []*discordgo.ApplicationCommand
 	commandHandlers map[string]Handler
@@ -31,7 +28,6 @@ func NewRegistry() *Registry {
 	}
 }
 
-// RegisterCommand adds a slash command definition and its handler.
 func (r *Registry) RegisterCommand(command *discordgo.ApplicationCommand, handler Handler) error {
 	if command == nil || command.Name == "" {
 		return errors.New("command name is required")
@@ -48,7 +44,6 @@ func (r *Registry) RegisterCommand(command *discordgo.ApplicationCommand, handle
 	return nil
 }
 
-// RegisterModal adds a handler for a modal custom ID.
 func (r *Registry) RegisterModal(customID string, handler Handler) error {
 	if customID == "" {
 		return errors.New("modal custom ID is required")
@@ -64,12 +59,10 @@ func (r *Registry) RegisterModal(customID string, handler Handler) error {
 	return nil
 }
 
-// Commands returns a copy of the registered application command definitions.
 func (r *Registry) Commands() []*discordgo.ApplicationCommand {
 	return append([]*discordgo.ApplicationCommand(nil), r.commands...)
 }
 
-// Handle dispatches supported interactions to their registered handler.
 func (r *Registry) Handle(session *discordgo.Session, interaction *discordgo.InteractionCreate) error {
 	var (
 		key     string

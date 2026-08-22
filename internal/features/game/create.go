@@ -1,41 +1,22 @@
 package game
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"discord-diplomacy/internal/apis/diplomacy"
+	"discord-diplomacy/internal/types"
+	"discord-diplomacy/internal/utils"
+)
 
-type CreateSubcommand struct {
-	Name        string
-	Description string
-}
+var CreateSubcommand = types.Subcommand{
+	Name:        "create",
+	Description: "Create a new game",
+	Handler: func(cctx *utils.CommandContext) error {
+		API := diplomacy.NewAPI()
 
-func NewCreateSubcommand() CreateSubcommand {
-	return CreateSubcommand{
-		Name: "create",
-		Description: "Create a new game",
-	}
-}
+		g, err := API.GetGame(*cctx.ActiveGame)
+		if err != nil {
+			return cctx.BasicEphemeralResponse(err.Error())
+		}
 
-func (c CreateSubcommand) Handle(session *discordgo.Session, interaction *discordgo.InteractionCreate) error {
-	return session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: c.Description,
-			Flags:   discordgo.MessageFlagsEphemeral,
-		},
-	})
-}
-
-func createSubcommand() *discordgo.ApplicationCommandOption {
-	return &discordgo.ApplicationCommandOption{
-		Type:        discordgo.ApplicationCommandOptionSubCommand,
-		Name:        createSubcommandName,
-		Description: "Create a new game",
-	}
-}
-
-func (Module) handleCreate(
-	session *discordgo.Session,
-	interaction *discordgo.InteractionCreate,
-	_ *discordgo.ApplicationCommandInteractionDataOption,
-) error {
-	return respondEphemeral(session, interaction, "Game creation is not available yet.")
+		return cctx.BasicEphemeralResponse(g.Map.Name)
+	},
 }

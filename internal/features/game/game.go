@@ -4,73 +4,55 @@ import (
 	"errors"
 	"fmt"
 
-	"discord-diplomacy/internal/config"
 	"discord-diplomacy/internal/interactions"
+	"discord-diplomacy/internal/types"
+	"discord-diplomacy/internal/utils"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-type Handler interface {
-	Handle(session *discordgo.Session, interaction *discordgo.InteractionCreate) error
+type Command struct {
+	cctx         *utils.CommandContext
+	subcommands types.SubcommandMap
 }
 
-type Module struct {
-	cfg      *config.Shared
-	handlers map[string]Handler
-}
-
-func New(cfg *config.Shared) Module {
-	m := Module{
-		cfg:      cfg,
-		handlers: make(map[string]Handler),
+func New(cctx *utils.CommandContext) Command {
+	m := Command{
+		cctx: cctx,
+		subcommands: types.NewSubcommandMap([]types.Subcommand{
+			CreateSubcommand,
+			JoinSubcommand,
+			LeaveSubcommand,
+			StatusSubcommand,
+		}),
 	}
-	m.handlers[createSubcommandName] = m.handleCreate
-	m.handlers[joinSubcommandName] = m.handleJoin
-	m.handlers[statusSubcommandName] = m.handleStatus
+
 	return m
 }
 
-func (m Module) Register(registry *interactions.Registry) error {
+func (c Command) Register(registry *interactions.Registry) error {
 	return registry.RegisterCommand(&discordgo.ApplicationCommand{
 		Name:        "game",
 		Description: "Manage a Diplomacy game",
-		Options: []*discordgo.ApplicationCommandOption{
-			createSubcommand(),
-			joinSubcommand(),
-			statusSubcommand(),
-		},
-	}, m.handle)
+		Options:     c.subcommands.Options(),
+	}, c.handle)
 }
 
-func (m Module) handle(session *discordgo.Session, interaction *discordgo.InteractionCreate) error {
+func (c Command) handle(session *discordgo.Session, interaction *discordgo.InteractionCreate) error {
 	options := interaction.ApplicationCommandData().Options
 	if len(options) != 1 {
 		return errors.New("game command requires exactly one subcommand")
 	}
 
-	subcommand := options[0]
-	if subcommand.Type != discordgo.ApplicationCommandOptionSubCommand {
-		return fmt.Errorf("game option %q is not a subcommand", subcommand.Name)
+	option := options[0]
+	if option.Type != discordgo.ApplicationCommandOptionSubCommand {
+		return fmt.Errorf("game option %q is not a subcommand", option.Name)
 	}
 
-	handler, ok := m.handlers[subcommand.Name]
+	subcommand, ok := c.subcommands[option.Name]
 	if !ok {
-		return fmt.Errorf("unknown game subcommand %q", subcommand.Name)
+		return fmt.Errorf("unknown game subcommand %q", option.Name)
 	}
 
-	return handler(session, interaction, subcommand)
-}
-
-func respondEphemeral(
-	session *discordgo.Session,
-	interaction *discordgo.InteractionCreate,
-	content string,
-) error {
-	return session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: content,
-			Flags:   discordgo.MessageFlagsEphemeral,
-		},
-	})
+	return subcommand.Handler(c.cctx)
 }

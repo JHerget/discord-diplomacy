@@ -12,6 +12,7 @@ import (
 	"discord-diplomacy/internal/features/feedback"
 	"discord-diplomacy/internal/features/game"
 	"discord-diplomacy/internal/features/ping"
+	"discord-diplomacy/internal/utils"
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	sharedCfg, err := config.LoadShared(cfg.GuildID)
+	cctx, err := utils.NewCommandContext(cfg.GuildID)
 	if err != nil {
 		logger.Error("invalid state file", "error", err)
 		os.Exit(1)
@@ -34,7 +35,7 @@ func main() {
 		logger,
 		ping.New(sharedCfg),
 		feedback.New(sharedCfg),
-		game.New(sharedCfg),
+		game.New(cctx),
 	)
 	if err != nil {
 		logger.Error("create bot", "error", err)
