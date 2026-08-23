@@ -33,9 +33,9 @@ func main() {
 	application, err := bot.New(
 		cfg,
 		logger,
-		ping.New(sharedCfg),
-		feedback.New(sharedCfg),
-		game.New(cctx),
+		ping.New(),
+		feedback.New(),
+		game.New(),
 	)
 	if err != nil {
 		logger.Error("create bot", "error", err)

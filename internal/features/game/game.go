@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"discord-diplomacy/internal/interactions"
 	"discord-diplomacy/internal/types"
 	"discord-diplomacy/internal/utils"
 
@@ -12,32 +11,30 @@ import (
 )
 
 type Command struct {
-	cctx        *utils.CommandContext
-	subcommands types.SubcommandMap
+	subcommands  types.SubcommandMap
+	Registration *discordgo.ApplicationCommand
 }
 
-func New(cctx *utils.CommandContext) Command {
+func New() Command {
+	subcommands := types.NewSubcommandMap([]types.Subcommand{
+		CreateSubcommand,
+		JoinSubcommand,
+		LeaveSubcommand,
+		StatusSubcommand,
+	})
+
 	return Command{
-		cctx: cctx,
-		subcommands: types.NewSubcommandMap([]types.Subcommand{
-			CreateSubcommand,
-			JoinSubcommand,
-			LeaveSubcommand,
-			StatusSubcommand,
-		}),
+		subcommands: subcommands,
+		Registration: &discordgo.ApplicationCommand{
+			Name:        "game",
+			Description: "Manage a Diplomacy game",
+			Options:     subcommands.Options(),
+		},
 	}
 }
 
-func (c Command) Register(registry *interactions.Registry) error {
-	return registry.RegisterCommand(&discordgo.ApplicationCommand{
-		Name:        "game",
-		Description: "Manage a Diplomacy game",
-		Options:     c.subcommands.Options(),
-	}, c.handle)
-}
-
-func (c Command) handle(session *discordgo.Session, interaction *discordgo.InteractionCreate) error {
-	options := interaction.ApplicationCommandData().Options
+func (c Command) Handle(cctx *utils.CommandContext) error {
+	options := cctx.Interaction.ApplicationCommandData().Options
 	if len(options) != 1 {
 		return errors.New("game command requires exactly one subcommand")
 	}
@@ -52,5 +49,5 @@ func (c Command) handle(session *discordgo.Session, interaction *discordgo.Inter
 		return fmt.Errorf("unknown game subcommand %q", option.Name)
 	}
 
-	return subcommand.Handler(c.cctx)
+	return subcommand.Handler(cctx)
 }

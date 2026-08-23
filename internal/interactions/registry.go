@@ -1,6 +1,7 @@
 package interactions
 
 import (
+	"discord-diplomacy/internal/utils"
 	"errors"
 	"fmt"
 
@@ -9,11 +10,7 @@ import (
 
 var ErrHandlerNotFound = errors.New("interaction handler not found")
 
-type Handler func(*discordgo.Session, *discordgo.InteractionCreate) error
-
-type Module interface {
-	Register(*Registry) error
-}
+type Handler func(*utils.CommandContext) error
 
 type Registry struct {
 	commands        []*discordgo.ApplicationCommand
@@ -28,7 +25,7 @@ func NewRegistry() *Registry {
 	}
 }
 
-func (r *Registry) RegisterCommand(command *discordgo.ApplicationCommand, handler Handler) error {
+func (r *Registry) AddCommand(command *discordgo.ApplicationCommand, handler Handler) error {
 	if command == nil || command.Name == "" {
 		return errors.New("command name is required")
 	}
@@ -44,7 +41,7 @@ func (r *Registry) RegisterCommand(command *discordgo.ApplicationCommand, handle
 	return nil
 }
 
-func (r *Registry) RegisterModal(customID string, handler Handler) error {
+func (r *Registry) AddModal(customID string, handler Handler) error {
 	if customID == "" {
 		return errors.New("modal custom ID is required")
 	}
@@ -63,19 +60,19 @@ func (r *Registry) Commands() []*discordgo.ApplicationCommand {
 	return append([]*discordgo.ApplicationCommand(nil), r.commands...)
 }
 
-func (r *Registry) Handle(session *discordgo.Session, interaction *discordgo.InteractionCreate) error {
+func (r *Registry) Handle(cctx *utils.CommandContext) error {
 	var (
 		key     string
 		handler Handler
 		exists  bool
 	)
 
-	switch interaction.Type {
+	switch cctx.Interaction.Type {
 	case discordgo.InteractionApplicationCommand:
-		key = interaction.ApplicationCommandData().Name
+		key = cctx.Interaction.ApplicationCommandData().Name
 		handler, exists = r.commandHandlers[key]
 	case discordgo.InteractionModalSubmit:
-		key = interaction.ModalSubmitData().CustomID
+		key = cctx.Interaction.ModalSubmitData().CustomID
 		handler, exists = r.modalHandlers[key]
 	default:
 		return fmt.Errorf("%w: unsupported interaction type %d", ErrHandlerNotFound, interaction.Type)
@@ -85,5 +82,5 @@ func (r *Registry) Handle(session *discordgo.Session, interaction *discordgo.Int
 		return fmt.Errorf("%w: %q", ErrHandlerNotFound, key)
 	}
 
-	return handler(session, interaction)
+	return handler(cctx)
 }
