@@ -9,9 +9,9 @@ import (
 )
 
 type CommandContext struct {
-	Session *discordgo.Session
+	Session     *discordgo.Session
 	Interaction *discordgo.InteractionCreate
-	ActiveGame *string
+	ActiveGame  *string
 }
 
 func NewCommandContext(guildID string) (*CommandContext, error) {

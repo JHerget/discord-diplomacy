@@ -12,12 +12,12 @@ import (
 )
 
 type Command struct {
-	cctx         *utils.CommandContext
+	cctx        *utils.CommandContext
 	subcommands types.SubcommandMap
 }
 
 func New(cctx *utils.CommandContext) Command {
-	m := Command{
+	return Command{
 		cctx: cctx,
 		subcommands: types.NewSubcommandMap([]types.Subcommand{
 			CreateSubcommand,
@@ -26,8 +26,6 @@ func New(cctx *utils.CommandContext) Command {
 			StatusSubcommand,
 		}),
 	}
-
-	return m
 }
 
 func (c Command) Register(registry *interactions.Registry) error {
