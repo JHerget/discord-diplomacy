@@ -50,7 +50,12 @@ func (a *API) CreateGame(req models.CreateGameRequest) (*models.Game, error) {
 	res, err := http.Post(url, "application/json", bytes.NewReader(body))
 
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return nil, errors.New(res.Status)
+		var body models.Error
+		if err = json.NewDecoder(res.Body).Decode(&body); err != nil {
+			return nil, err
+		}
+
+		return nil, errors.New(body.Message)
 	}
 
 	var g models.Game

@@ -23,7 +23,7 @@ var CreateSubcommand = types.Subcommand{
 
 		g, err := API.CreateGame(models.CreateGameRequest{
 			ExternalID:    &cctx.GuildID,
-			MapID:         "",
+			MapID:         "6a78a3ae70365705ddc6ee53",
 			DaysPerTurn:   14,
 			TurnStartHour: 12,
 			Timezone:      -7,
