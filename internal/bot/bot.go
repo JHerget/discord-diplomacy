@@ -16,11 +16,11 @@ import (
 
 type Bot struct {
 	session    *discordgo.Session
-	guildID    string
-	activeGame *string
 	mu         sync.RWMutex
 	registry   *interactions.Registry
 	logger     *slog.Logger
+	guildID    string
+	activeGame *string
 }
 
 func New(cfg config.Config, logger *slog.Logger, modules ...interactions.Module) (*Bot, error) {
@@ -42,10 +42,10 @@ func New(cfg config.Config, logger *slog.Logger, modules ...interactions.Module)
 
 	bot := &Bot{
 		session:    session,
-		guildID:    cfg.GuildID,
-		activeGame: cfg.ActiveGame,
 		registry:   registry,
 		logger:     logger,
+		guildID:    cfg.GuildID,
+		activeGame: cfg.ActiveGame,
 	}
 	bot.session.AddHandler(bot.handleInteraction)
 	bot.session.AddHandler(bot.handleReady)
@@ -83,7 +83,7 @@ func (b *Bot) handleInteraction(session *discordgo.Session, interaction *discord
 	cctx := &utils.CommandContext{
 		Session:           session,
 		Interaction:       interaction,
-		ActiveGame:        b.getActiveGame(),
+		ActiveGame:        b.GetActiveGame(),
 		GuildID:           b.guildID,
 		SetActiveGameFunc: b.setActiveGame,
 	}
@@ -97,7 +97,7 @@ func (b *Bot) handleInteraction(session *discordgo.Session, interaction *discord
 	}
 }
 
-func (b *Bot) getActiveGame() *string {
+func (b *Bot) GetActiveGame() *string {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
 

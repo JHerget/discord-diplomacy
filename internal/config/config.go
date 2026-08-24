@@ -31,7 +31,12 @@ func Load() (Config, error) {
 		return Config{}, err
 	}
 
-	data, err := os.ReadFile("/var/lib/discord-diplomacy.json")
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return Config{}, err
+	}
+
+	data, err := os.ReadFile(fmt.Sprintf("%s/.diplomacy/discord-diplomacy.json", home))
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return cfg, err
 	}
@@ -49,4 +54,30 @@ func Load() (Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func (c Config) Save() error {
+	gameID := ""
+	if c.ActiveGame != nil {
+		gameID = *c.ActiveGame
+	}
+
+	content, err := json.MarshalIndent(map[string]string{
+		c.GuildID: gameID,
+	}, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+
+	dir := fmt.Sprintf("%s/.diplomacy/discord-diplomacy.json", home)
+	if err := os.WriteFile(dir, content, 0644); err != nil {
+		return err
+	}
+
+	return nil
 }

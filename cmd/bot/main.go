@@ -42,4 +42,9 @@ func main() {
 		logger.Error("bot stopped with an error", "error", err)
 		os.Exit(1)
 	}
+
+	cfg.ActiveGame = application.GetActiveGame()
+	if err := cfg.Save(); err != nil {
+		logger.Error("failed to save the config", "error", err)
+	}
 }

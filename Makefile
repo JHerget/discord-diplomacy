@@ -5,5 +5,5 @@ build: format
 	mkdir -p bin
 	go build -o bin/bot ./cmd/bot
 
-start: build
+run: build
 	./bin/bot
