@@ -11,25 +11,25 @@ import (
 )
 
 type Command struct {
-	subcommands  types.SubcommandMap
-	Registration *discordgo.ApplicationCommand
+	subcommands types.SubcommandMap
 }
 
 func New() Command {
-	subcommands := types.NewSubcommandMap([]types.Subcommand{
-		CreateSubcommand,
-		JoinSubcommand,
-		LeaveSubcommand,
-		StatusSubcommand,
-	})
-
 	return Command{
-		subcommands: subcommands,
-		Registration: &discordgo.ApplicationCommand{
-			Name:        "game",
-			Description: "Manage a Diplomacy game",
-			Options:     subcommands.Options(),
-		},
+		subcommands: types.NewSubcommandMap([]types.Subcommand{
+			CreateSubcommand,
+			JoinSubcommand,
+			LeaveSubcommand,
+			StatusSubcommand,
+		}),
+	}
+}
+
+func (c Command) Registration() *discordgo.ApplicationCommand {
+	return &discordgo.ApplicationCommand{
+		Name:        "game",
+		Description: "Manage a Diplomacy game",
+		Options:     c.subcommands.Options(),
 	}
 }
 

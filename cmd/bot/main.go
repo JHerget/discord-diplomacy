@@ -12,7 +12,6 @@ import (
 	"discord-diplomacy/internal/features/feedback"
 	"discord-diplomacy/internal/features/game"
 	"discord-diplomacy/internal/features/ping"
-	"discord-diplomacy/internal/utils"
 )
 
 func main() {
@@ -24,17 +23,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	cctx, err := utils.NewCommandContext(cfg.GuildID)
-	if err != nil {
-		logger.Error("invalid state file", "error", err)
-		os.Exit(1)
-	}
-
 	application, err := bot.New(
 		cfg,
 		logger,
-		ping.New(),
 		feedback.New(),
+		ping.New(),
 		game.New(),
 	)
 	if err != nil {

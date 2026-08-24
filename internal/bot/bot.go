@@ -5,17 +5,22 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"sync"
 
 	"discord-diplomacy/internal/config"
 	"discord-diplomacy/internal/interactions"
+	"discord-diplomacy/internal/utils"
+
 	"github.com/bwmarrin/discordgo"
 )
 
 type Bot struct {
-	session  *discordgo.Session
-	guildID  string
-	registry *interactions.Registry
-	logger   *slog.Logger
+	session    *discordgo.Session
+	guildID    string
+	activeGame *string
+	mu         sync.RWMutex
+	registry   *interactions.Registry
+	logger     *slog.Logger
 }
 
 func New(cfg config.Config, logger *slog.Logger, modules ...interactions.Module) (*Bot, error) {
@@ -24,7 +29,7 @@ func New(cfg config.Config, logger *slog.Logger, modules ...interactions.Module)
 		if module == nil {
 			return nil, errors.New("interaction module cannot be nil")
 		}
-		if err := module.Register(registry); err != nil {
+		if err := registry.AddCommand(module); err != nil {
 			return nil, fmt.Errorf("register interaction module: %w", err)
 		}
 	}
@@ -36,10 +41,11 @@ func New(cfg config.Config, logger *slog.Logger, modules ...interactions.Module)
 	session.Identify.Intents = discordgo.IntentsGuilds
 
 	bot := &Bot{
-		session:  session,
-		guildID:  cfg.GuildID,
-		registry: registry,
-		logger:   logger,
+		session:    session,
+		guildID:    cfg.GuildID,
+		activeGame: cfg.ActiveGame,
+		registry:   registry,
+		logger:     logger,
 	}
 	bot.session.AddHandler(bot.handleInteraction)
 	bot.session.AddHandler(bot.handleReady)
@@ -74,11 +80,37 @@ func (b *Bot) handleReady(_ *discordgo.Session, ready *discordgo.Ready) {
 }
 
 func (b *Bot) handleInteraction(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
-	if err := b.registry.Handle(session, interaction); err != nil {
+	cctx := &utils.CommandContext{
+		Session:           session,
+		Interaction:       interaction,
+		ActiveGame:        b.getActiveGame(),
+		SetActiveGameFunc: b.setActiveGame,
+	}
+
+	if err := b.registry.Handle(cctx); err != nil {
 		if errors.Is(err, interactions.ErrHandlerNotFound) {
 			b.logger.Warn("ignored unknown interaction", "type", interaction.Type, "error", err)
 			return
 		}
 		b.logger.Error("interaction handler failed", "type", interaction.Type, "error", err)
 	}
+}
+
+func (b *Bot) getActiveGame() *string {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+
+	if b.activeGame == nil {
+		return nil
+	}
+
+	gameID := *b.activeGame
+	return &gameID
+}
+
+func (b *Bot) setActiveGame(gameID string) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	b.activeGame = &gameID
 }

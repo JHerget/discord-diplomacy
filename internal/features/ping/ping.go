@@ -1,27 +1,26 @@
 package ping
 
 import (
-	"discord-diplomacy/internal/config"
-	"discord-diplomacy/internal/interactions"
+	"discord-diplomacy/internal/utils"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-type Module struct{}
+type Command struct{}
 
-func New(cfg *config.Shared) Module {
-	return Module{}
+func New() Command {
+	return Command{}
 }
 
-func (Module) Register(registry *interactions.Registry) error {
-	return registry.RegisterCommand(&discordgo.ApplicationCommand{
+func (Command) Registration() *discordgo.ApplicationCommand {
+	return &discordgo.ApplicationCommand{
 		Name:        "ping",
 		Description: "Check whether the bot is responding",
-	}, handle)
+	}
 }
 
-func handle(session *discordgo.Session, interaction *discordgo.InteractionCreate) error {
-	return session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+func (Command) Handle(cctx *utils.CommandContext) error {
+	return cctx.Session.InteractionRespond(cctx.Interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Content: "Pong!",

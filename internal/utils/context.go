@@ -1,40 +1,20 @@
 package utils
 
-import (
-	"encoding/json"
-	"errors"
-	"os"
-
-	"github.com/bwmarrin/discordgo"
-)
+import "github.com/bwmarrin/discordgo"
 
 type CommandContext struct {
-	Session     *discordgo.Session
-	Interaction *discordgo.InteractionCreate
-	ActiveGame  *string
+	Session           *discordgo.Session
+	Interaction       *discordgo.InteractionCreate
+	ActiveGame        *string
+	SetActiveGameFunc func(string)
 }
 
-func NewCommandContext(guildID string) (*CommandContext, error) {
-	cctx := &CommandContext{}
+func (cc *CommandContext) SetActiveGame(gameID string) {
+	cc.ActiveGame = &gameID
 
-	data, err := os.ReadFile("/var/lib/discord-diplomacy.json")
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		return cctx, err
+	if cc.SetActiveGameFunc != nil {
+		cc.SetActiveGameFunc(gameID)
 	}
-
-	if len(data) > 0 {
-		var activeGames map[string]string
-		if err := json.Unmarshal(data, &activeGames); err != nil {
-			return cctx, err
-		}
-
-		gameId, ok := activeGames[guildID]
-		if ok {
-			cctx.ActiveGame = &gameId
-		}
-	}
-
-	return cctx, nil
 }
 
 func (cc *CommandContext) BasicResponse(content string) error {

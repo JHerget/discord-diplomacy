@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"discord-diplomacy/internal/config"
 	"discord-diplomacy/internal/interactions"
+	"discord-diplomacy/internal/utils"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -15,32 +15,21 @@ const (
 	inputCustomID = "feedback:message"
 )
 
-type Module struct {
-	cfg *config.Shared
+type Command struct{}
+
+func New() Command {
+	return Command{}
 }
 
-func New(cfg *config.Shared) Module {
-	return Module{
-		cfg: cfg,
-	}
-}
-
-func (m Module) Register(registry *interactions.Registry) error {
-	if err := registry.RegisterCommand(&discordgo.ApplicationCommand{
+func (Command) Registration() *discordgo.ApplicationCommand {
+	return &discordgo.ApplicationCommand{
 		Name:        "feedback",
 		Description: "Open the feedback form",
-	}, openModal); err != nil {
-		return fmt.Errorf("register feedback command: %w", err)
 	}
-
-	if err := registry.RegisterModal(modalCustomID, submitModal); err != nil {
-		return fmt.Errorf("register feedback modal: %w", err)
-	}
-	return nil
 }
 
-func openModal(session *discordgo.Session, interaction *discordgo.InteractionCreate) error {
-	return session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+func (Command) Handle(cctx *utils.CommandContext) error {
+	return cctx.Session.InteractionRespond(cctx.Interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseModal,
 		Data: &discordgo.InteractionResponseData{
 			CustomID: modalCustomID,

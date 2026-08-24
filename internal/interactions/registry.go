@@ -10,7 +10,14 @@ import (
 
 var ErrHandlerNotFound = errors.New("interaction handler not found")
 
-type Handler func(*utils.CommandContext) error
+type Handler interface {
+	Handle(*utils.CommandContext) error
+}
+
+type Module interface {
+	Handler
+	Registration() *discordgo.ApplicationCommand
+}
 
 type Registry struct {
 	commands        []*discordgo.ApplicationCommand
@@ -25,19 +32,18 @@ func NewRegistry() *Registry {
 	}
 }
 
-func (r *Registry) AddCommand(command *discordgo.ApplicationCommand, handler Handler) error {
-	if command == nil || command.Name == "" {
+func (r *Registry) AddCommand(command Module) error {
+	registration := command.Registration()
+
+	if registration == nil || registration.Name == "" {
 		return errors.New("command name is required")
 	}
-	if handler == nil {
-		return fmt.Errorf("command %q has no handler", command.Name)
-	}
-	if _, exists := r.commandHandlers[command.Name]; exists {
-		return fmt.Errorf("command %q is already registered", command.Name)
+	if _, exists := r.commandHandlers[registration.Name]; exists {
+		return fmt.Errorf("command %q is already registered", registration.Name)
 	}
 
-	r.commands = append(r.commands, command)
-	r.commandHandlers[command.Name] = handler
+	r.commands = append(r.commands, registration)
+	r.commandHandlers[registration.Name] = command
 	return nil
 }
 
@@ -75,12 +81,12 @@ func (r *Registry) Handle(cctx *utils.CommandContext) error {
 		key = cctx.Interaction.ModalSubmitData().CustomID
 		handler, exists = r.modalHandlers[key]
 	default:
-		return fmt.Errorf("%w: unsupported interaction type %d", ErrHandlerNotFound, interaction.Type)
+		return fmt.Errorf("%w: unsupported interaction type %d", ErrHandlerNotFound, cctx.Interaction.Type)
 	}
 
 	if !exists {
 		return fmt.Errorf("%w: %q", ErrHandlerNotFound, key)
 	}
 
-	return handler(cctx)
+	return handler.Handle(cctx)
 }
