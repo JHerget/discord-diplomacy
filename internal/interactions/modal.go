@@ -6,7 +6,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// TextInputValue extracts a text input value from a modal submission.
 func TextInputValue(data discordgo.ModalSubmitInteractionData, customID string) (string, error) {
 	for _, component := range data.Components {
 		row, ok := component.(*discordgo.ActionsRow)
