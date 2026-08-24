@@ -14,51 +14,57 @@ type Handler interface {
 	Handle(*utils.CommandContext) error
 }
 
+type Register interface {
+	Register(*Registry) error
+}
+
+type Submitter interface {
+	Submit(*utils.CommandContext) error
+}
+
 type Module interface {
 	Handler
-	Registration() *discordgo.ApplicationCommand
+	Register
 }
 
 type Registry struct {
 	commands        []*discordgo.ApplicationCommand
 	commandHandlers map[string]Handler
-	modalHandlers   map[string]Handler
+	modalHandlers   map[string]Submitter
 }
 
 func NewRegistry() *Registry {
 	return &Registry{
 		commandHandlers: make(map[string]Handler),
-		modalHandlers:   make(map[string]Handler),
+		modalHandlers:   make(map[string]Submitter),
 	}
 }
 
-func (r *Registry) AddCommand(command Module) error {
-	registration := command.Registration()
-
-	if registration == nil || registration.Name == "" {
+func (r *Registry) AddCommand(command *discordgo.ApplicationCommand, handler Handler) error {
+	if command == nil || command.Name == "" {
 		return errors.New("command name is required")
 	}
-	if _, exists := r.commandHandlers[registration.Name]; exists {
-		return fmt.Errorf("command %q is already registered", registration.Name)
+	if _, exists := r.commandHandlers[command.Name]; exists {
+		return fmt.Errorf("command %q is already registered", command.Name)
 	}
 
-	r.commands = append(r.commands, registration)
-	r.commandHandlers[registration.Name] = command
+	r.commands = append(r.commands, command)
+	r.commandHandlers[command.Name] = handler
 	return nil
 }
 
-func (r *Registry) AddModal(customID string, handler Handler) error {
+func (r *Registry) AddModal(customID string, submitter Submitter) error {
 	if customID == "" {
 		return errors.New("modal custom ID is required")
 	}
-	if handler == nil {
+	if submitter == nil {
 		return fmt.Errorf("modal %q has no handler", customID)
 	}
 	if _, exists := r.modalHandlers[customID]; exists {
 		return fmt.Errorf("modal %q is already registered", customID)
 	}
 
-	r.modalHandlers[customID] = handler
+	r.modalHandlers[customID] = submitter
 	return nil
 }
 
@@ -67,26 +73,20 @@ func (r *Registry) Commands() []*discordgo.ApplicationCommand {
 }
 
 func (r *Registry) Handle(cctx *utils.CommandContext) error {
-	var (
-		key     string
-		handler Handler
-		exists  bool
-	)
-
 	switch cctx.Interaction.Type {
 	case discordgo.InteractionApplicationCommand:
-		key = cctx.Interaction.ApplicationCommandData().Name
-		handler, exists = r.commandHandlers[key]
+		key := cctx.Interaction.ApplicationCommandData().Name
+		handler, ok := r.commandHandlers[key]
+		if ok {
+			return handler.Handle(cctx)
+		}
 	case discordgo.InteractionModalSubmit:
-		key = cctx.Interaction.ModalSubmitData().CustomID
-		handler, exists = r.modalHandlers[key]
-	default:
-		return fmt.Errorf("%w: unsupported interaction type %d", ErrHandlerNotFound, cctx.Interaction.Type)
+		key := cctx.Interaction.ModalSubmitData().CustomID
+		submitter, ok := r.modalHandlers[key]
+		if ok {
+			return submitter.Submit(cctx)
+		}
 	}
 
-	if !exists {
-		return fmt.Errorf("%w: %q", ErrHandlerNotFound, key)
-	}
-
-	return handler.Handle(cctx)
+	return fmt.Errorf("%w: unsupported interaction type %d", ErrHandlerNotFound, cctx.Interaction.Type)
 }

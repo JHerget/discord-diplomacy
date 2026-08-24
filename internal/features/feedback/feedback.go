@@ -10,35 +10,46 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const (
-	modalCustomID = "feedback:submit"
-	inputCustomID = "feedback:message"
-)
+const ()
 
-type Command struct{}
-
-func New() Command {
-	return Command{}
+type Command struct {
+	modalCustomID string
+	inputCustomID string
 }
 
-func (Command) Registration() *discordgo.ApplicationCommand {
-	return &discordgo.ApplicationCommand{
-		Name:        "feedback",
-		Description: "Open the feedback form",
+func New() Command {
+	return Command{
+		modalCustomID: "feedback:submit",
+		inputCustomID: "feedback:message",
 	}
 }
 
-func (Command) Handle(cctx *utils.CommandContext) error {
+func (c Command) Register(registry *interactions.Registry) error {
+	if err := registry.AddCommand(&discordgo.ApplicationCommand{
+		Name:        "feedback",
+		Description: "Open the feedback form",
+	}, c); err != nil {
+		return err
+	}
+
+	if err := registry.AddModal(c.modalCustomID, c); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c Command) Handle(cctx *utils.CommandContext) error {
 	return cctx.Session.InteractionRespond(cctx.Interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseModal,
 		Data: &discordgo.InteractionResponseData{
-			CustomID: modalCustomID,
+			CustomID: c.modalCustomID,
 			Title:    "Feedback",
 			Components: []discordgo.MessageComponent{
 				discordgo.ActionsRow{
 					Components: []discordgo.MessageComponent{
 						discordgo.TextInput{
-							CustomID:    inputCustomID,
+							CustomID:    c.inputCustomID,
 							Label:       "What would you like to share?",
 							Style:       discordgo.TextInputParagraph,
 							Placeholder: "Enter your feedback",
@@ -52,8 +63,8 @@ func (Command) Handle(cctx *utils.CommandContext) error {
 	})
 }
 
-func submitModal(session *discordgo.Session, interaction *discordgo.InteractionCreate) error {
-	value, err := interactions.TextInputValue(interaction.ModalSubmitData(), inputCustomID)
+func (c Command) Submit(cctx *utils.CommandContext) error {
+	value, err := interactions.TextInputValue(cctx.Interaction.ModalSubmitData(), c.inputCustomID)
 	if err != nil {
 		return err
 	}
@@ -61,7 +72,7 @@ func submitModal(session *discordgo.Session, interaction *discordgo.InteractionC
 		return fmt.Errorf("feedback message is empty")
 	}
 
-	return session.InteractionRespond(interaction.Interaction, &discordgo.InteractionResponse{
+	return cctx.Session.InteractionRespond(cctx.Interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Content: "Thanks for your feedback!",

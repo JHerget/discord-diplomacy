@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"discord-diplomacy/internal/interactions"
 	"discord-diplomacy/internal/types"
 	"discord-diplomacy/internal/utils"
 
@@ -25,12 +26,12 @@ func New() Command {
 	}
 }
 
-func (c Command) Registration() *discordgo.ApplicationCommand {
-	return &discordgo.ApplicationCommand{
+func (c Command) Register(registry *interactions.Registry) error {
+	return registry.AddCommand(&discordgo.ApplicationCommand{
 		Name:        "game",
 		Description: "Manage a Diplomacy game",
 		Options:     c.subcommands.Options(),
-	}
+	}, c)
 }
 
 func (c Command) Handle(cctx *utils.CommandContext) error {
