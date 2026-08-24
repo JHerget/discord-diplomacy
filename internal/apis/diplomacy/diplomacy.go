@@ -1,6 +1,7 @@
 package diplomacy
 
 import (
+	"bytes"
 	"discord-diplomacy/internal/apis/diplomacy/models"
 	"encoding/json"
 	"errors"
@@ -26,6 +27,27 @@ func (a *API) GetGame(id string) (*models.Game, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, errors.New(res.Status)
+	}
+
+	var g models.Game
+	if err = json.NewDecoder(res.Body).Decode(&g); err != nil {
+		return nil, err
+	}
+
+	return &g, nil
+}
+
+func (a *API) CreateGame(req models.CreateGameRequest) (*models.Game, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/v1/games", a.baseURL)
+	res, err := http.Post(url, "application/json", bytes.NewReader(body))
 
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
 		return nil, errors.New(res.Status)

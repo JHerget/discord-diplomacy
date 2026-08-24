@@ -84,6 +84,7 @@ func (b *Bot) handleInteraction(session *discordgo.Session, interaction *discord
 		Session:           session,
 		Interaction:       interaction,
 		ActiveGame:        b.getActiveGame(),
+		GuildID:           b.guildID,
 		SetActiveGameFunc: b.setActiveGame,
 	}
 

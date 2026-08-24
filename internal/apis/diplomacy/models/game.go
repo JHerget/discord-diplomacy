@@ -16,3 +16,12 @@ type Game struct {
 	InProgress    bool         `json:"inProgress"`
 	IsDeleted     bool         `json:"isDeleted"`
 }
+
+type CreateGameRequest struct {
+	ExternalID    *string `json:"externalId"`
+	MapID         string  `json:"mapId"`
+	DaysPerTurn   int     `json:"daysPerTurn"`
+	TurnStartHour int     `json:"turnStartHour"`
+	Timezone      int     `json:"timezone"`
+	StartDate     int     `json:"startDate"`
+}

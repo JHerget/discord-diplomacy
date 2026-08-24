@@ -6,6 +6,7 @@ type CommandContext struct {
 	Session           *discordgo.Session
 	Interaction       *discordgo.InteractionCreate
 	ActiveGame        *string
+	GuildID           string
 	SetActiveGameFunc func(string)
 }
 
