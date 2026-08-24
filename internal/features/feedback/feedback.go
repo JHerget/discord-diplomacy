@@ -64,10 +64,9 @@ func (c Command) Handle(cctx *utils.CommandContext) error {
 }
 
 func (c Command) Submit(cctx *utils.CommandContext) error {
-	value, err := interactions.TextInputValue(cctx.Interaction.ModalSubmitData(), c.inputCustomID)
-	if err != nil {
-		return err
-	}
+	inputs := interactions.TextInputValues(cctx.Interaction.ModalSubmitData())
+	value := inputs[c.inputCustomID]
+
 	if strings.TrimSpace(value) == "" {
 		return fmt.Errorf("feedback message is empty")
 	}

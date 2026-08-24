@@ -1,12 +1,10 @@
 package interactions
 
-import (
-	"fmt"
+import "github.com/bwmarrin/discordgo"
 
-	"github.com/bwmarrin/discordgo"
-)
+func TextInputValues(data discordgo.ModalSubmitInteractionData) map[string]string {
+	values := make(map[string]string)
 
-func TextInputValue(data discordgo.ModalSubmitInteractionData, customID string) (string, error) {
 	for _, component := range data.Components {
 		row, ok := component.(*discordgo.ActionsRow)
 		if !ok {
@@ -15,11 +13,11 @@ func TextInputValue(data discordgo.ModalSubmitInteractionData, customID string) 
 
 		for _, rowComponent := range row.Components {
 			input, ok := rowComponent.(*discordgo.TextInput)
-			if ok && input.CustomID == customID {
-				return input.Value, nil
+			if ok {
+				values[input.CustomID] = input.Value
 			}
 		}
 	}
 
-	return "", fmt.Errorf("text input %q was not found in modal submission", customID)
+	return values
 }
