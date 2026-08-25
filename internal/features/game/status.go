@@ -16,6 +16,7 @@ var StatusSubcommand = types.Subcommand{
 			g, err := API.GetGame(*cctx.ActiveGame)
 			if err == nil {
 				if g.InProgress {
+					//TODO list the current turn (i.e. Spring 1902), game start date, and current turn end date.
 					return cctx.BasicEphemeralResponse("The current game is in progress.")
 				} else {
 					return cctx.BasicEphemeralResponse("The current game is not in progress.")
