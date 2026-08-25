@@ -33,6 +33,8 @@ var CreateSubcommand = types.Subcommand{
 			return cctx.BasicEphemeralResponse(err.Error())
 		}
 
+		cctx.SetActiveGame(g.ID)
+
 		return cctx.BasicEphemeralResponse(g.ID)
 	},
 }
