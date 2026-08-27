@@ -17,6 +17,26 @@ type Game struct {
 	IsDeleted     bool         `json:"isDeleted"`
 }
 
+func (g *Game) CurrentTurn() *Turn {
+	if len(g.Turns) == 0 {
+		return nil
+	}
+
+	var latestTurn *Turn
+	for _, turn := range g.Turns {
+		if latestTurn == nil {
+			latestTurn = &turn
+			continue
+		}
+
+		if turn.TurnNumber > latestTurn.TurnNumber {
+			latestTurn = &turn
+		}
+	}
+
+	return latestTurn
+}
+
 type CreateGameRequest struct {
 	ExternalID    *string `json:"externalId"`
 	MapID         string  `json:"mapId"`
