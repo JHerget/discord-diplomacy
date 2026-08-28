@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -38,6 +39,26 @@ func (a *API) GetGame(id string) (*models.Game, error) {
 	}
 
 	return &g, nil
+}
+
+func (a *API) GetBoard(id string) ([]byte, error) {
+	url := fmt.Sprintf("%s/v1/games/%s/board", a.baseURL, id)
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, errors.New(res.Status)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
 }
 
 func (a *API) CreateGame(req models.CreateGameRequest) (*models.Game, error) {

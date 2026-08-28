@@ -5,6 +5,7 @@ import (
 	"discord-diplomacy/internal/types"
 	"discord-diplomacy/internal/utils"
 	"fmt"
+	"strings"
 )
 
 var StatusSubcommand = types.Subcommand{
@@ -25,15 +26,23 @@ var StatusSubcommand = types.Subcommand{
 			return cctx.BasicEphemeralResponse("The current game is not in progress.")
 		}
 
+		board, err := API.GetBoard(g.ID)
+		if err != nil {
+			return cctx.BasicEphemeralResponse(fmt.Sprintf("Error getting board: %v", err))
+		}
+
 		turn := g.CurrentTurn()
 		turnName := "No turns yet"
 		if turn != nil {
 			turnName = turn.Name()
 		}
 
-		message := fmt.Sprintf(`# %s\n## %s`, g.Map.Name, turnName)
+		message := fmt.Sprintf(`
+		# %s
+		## %s
+		`, g.Map.Name, turnName)
+		filename := fmt.Sprintf("diplomacy-%s.png", strings.ReplaceAll(strings.ToLower(turnName), " ", "-"))
 
-		// TODO: return the board image too.
-		return cctx.BasicEphemeralResponse(message)
+		return cctx.EphemeralImageResponse(message, filename, "image/png", board)
 	},
 }

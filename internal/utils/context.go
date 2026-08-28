@@ -1,6 +1,10 @@
 package utils
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"bytes"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 type CommandContext struct {
 	Session           *discordgo.Session
@@ -33,6 +37,23 @@ func (cc *CommandContext) BasicEphemeralResponse(content string) error {
 		Data: &discordgo.InteractionResponseData{
 			Content: content,
 			Flags:   discordgo.MessageFlagsEphemeral,
+		},
+	})
+}
+
+func (cc *CommandContext) EphemeralImageResponse(content string, filename string, contentType string, data []byte) error {
+	return cc.Session.InteractionRespond(cc.Interaction.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content: content,
+			Flags:   discordgo.MessageFlagsEphemeral,
+			Files: []*discordgo.File{
+				{
+					Name:        filename,
+					ContentType: contentType,
+					Reader:      bytes.NewReader(data),
+				},
+			},
 		},
 	})
 }
