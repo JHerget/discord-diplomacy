@@ -2,7 +2,7 @@ package ping
 
 import (
 	"discord-diplomacy/internal/interactions"
-	"discord-diplomacy/internal/utils"
+	"discord-diplomacy/internal/types"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -20,7 +20,7 @@ func (c Command) Register(registry *interactions.Registry) error {
 	}, c)
 }
 
-func (Command) Handle(cctx *utils.CommandContext) error {
+func (Command) Handle(cctx *types.CommandContext) error {
 	return cctx.Session.InteractionRespond(cctx.Interaction.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{

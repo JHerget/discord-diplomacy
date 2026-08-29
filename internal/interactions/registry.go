@@ -1,7 +1,7 @@
 package interactions
 
 import (
-	"discord-diplomacy/internal/utils"
+	"discord-diplomacy/internal/types"
 	"errors"
 	"fmt"
 
@@ -11,7 +11,7 @@ import (
 var ErrHandlerNotFound = errors.New("interaction handler not found")
 
 type Handler interface {
-	Handle(*utils.CommandContext) error
+	Handle(*types.CommandContext) error
 }
 
 type Register interface {
@@ -19,7 +19,7 @@ type Register interface {
 }
 
 type Submitter interface {
-	Submit(*utils.CommandContext) error
+	Submit(*types.CommandContext) error
 }
 
 type Module interface {
@@ -72,7 +72,7 @@ func (r *Registry) Commands() []*discordgo.ApplicationCommand {
 	return append([]*discordgo.ApplicationCommand(nil), r.commands...)
 }
 
-func (r *Registry) Handle(cctx *utils.CommandContext) error {
+func (r *Registry) Handle(cctx *types.CommandContext) error {
 	switch cctx.Interaction.Type {
 	case discordgo.InteractionApplicationCommand:
 		key := cctx.Interaction.ApplicationCommandData().Name

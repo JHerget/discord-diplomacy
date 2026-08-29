@@ -1,15 +1,13 @@
 package types
 
 import (
-	"discord-diplomacy/internal/utils"
-
 	"github.com/bwmarrin/discordgo"
 )
 
 type Subcommand struct {
 	Name        string
 	Description string
-	Handler     func(cctx *utils.CommandContext) error
+	Handler     func(cctx *CommandContext) error
 }
 
 func (s Subcommand) Create() *discordgo.ApplicationCommandOption {

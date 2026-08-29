@@ -6,7 +6,6 @@ import (
 
 	"discord-diplomacy/internal/interactions"
 	"discord-diplomacy/internal/types"
-	"discord-diplomacy/internal/utils"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -27,14 +26,18 @@ func New() Command {
 }
 
 func (c Command) Register(registry *interactions.Registry) error {
-	return registry.AddCommand(&discordgo.ApplicationCommand{
+	if err := registry.AddCommand(&discordgo.ApplicationCommand{
 		Name:        "game",
 		Description: "Manage a Diplomacy game",
 		Options:     c.subcommands.Options(),
-	}, c)
+	}, c); err != nil {
+		return err
+	}
+
+	return registry.AddModal(createModalCustomID, c)
 }
 
-func (c Command) Handle(cctx *utils.CommandContext) error {
+func (c Command) Handle(cctx *types.CommandContext) error {
 	options := cctx.Interaction.ApplicationCommandData().Options
 	if len(options) != 1 {
 		return errors.New("game command requires exactly one subcommand")

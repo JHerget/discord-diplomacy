@@ -21,8 +21,8 @@ func NewAPI() API {
 	}
 }
 
-func (a *API) GetGame(id string) (*models.Game, error) {
-	url := fmt.Sprintf("%s/v1/games/%s", a.baseURL, id)
+func (a *API) GetGame(gameID string) (*models.Game, error) {
+	url := fmt.Sprintf("%s/v1/games/%s", a.baseURL, gameID)
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -41,8 +41,8 @@ func (a *API) GetGame(id string) (*models.Game, error) {
 	return &g, nil
 }
 
-func (a *API) GetBoard(id string) ([]byte, error) {
-	url := fmt.Sprintf("%s/v1/games/%s/board", a.baseURL, id)
+func (a *API) GetBoard(gameID string) ([]byte, error) {
+	url := fmt.Sprintf("%s/v1/games/%s/board", a.baseURL, gameID)
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -69,14 +69,13 @@ func (a *API) CreateGame(req models.CreateGameRequest) (*models.Game, error) {
 
 	url := fmt.Sprintf("%s/v1/games", a.baseURL)
 	res, err := http.Post(url, "application/json", bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
 
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		var body models.Error
-		if err = json.NewDecoder(res.Body).Decode(&body); err != nil {
-			return nil, err
-		}
-
-		return nil, errors.New(body.Message)
+		return nil, decodeError(res)
 	}
 
 	var g models.Game
@@ -85,4 +84,61 @@ func (a *API) CreateGame(req models.CreateGameRequest) (*models.Game, error) {
 	}
 
 	return &g, nil
+}
+
+func (a *API) CreatePlayer(gameID string, req models.CreatePlayerRequest) (*models.Player, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/v1/games/%s/players", a.baseURL, gameID)
+	res, err := http.Post(url, "application/json", bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, decodeError(res)
+	}
+
+	var p models.Player
+	if err = json.NewDecoder(res.Body).Decode(&p); err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+func (a *API) DeletePlayer(gameID string, playerID string) error {
+	url := fmt.Sprintf("%s/v1/games/%s/players/%s", a.baseURL, gameID, playerID)
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		return err
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return decodeError(res)
+	}
+
+	return nil
+}
+
+func decodeError(res *http.Response) error {
+	var body models.Error
+	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+		return err
+	}
+	if body.Message == "" {
+		return errors.New(res.Status)
+	}
+
+	return errors.New(body.Message)
 }

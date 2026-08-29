@@ -3,7 +3,6 @@ package game
 import (
 	"discord-diplomacy/internal/apis/diplomacy"
 	"discord-diplomacy/internal/types"
-	"discord-diplomacy/internal/utils"
 	"fmt"
 	"strings"
 )
@@ -11,7 +10,7 @@ import (
 var StatusSubcommand = types.Subcommand{
 	Name:        "status",
 	Description: "Get the status of the current game",
-	Handler: func(cctx *utils.CommandContext) error {
+	Handler: func(cctx *types.CommandContext) error {
 		API := diplomacy.NewAPI()
 
 		if cctx.ActiveGame == nil {
@@ -43,6 +42,10 @@ var StatusSubcommand = types.Subcommand{
 		`, g.Map.Name, turnName)
 		filename := fmt.Sprintf("diplomacy-%s.png", strings.ReplaceAll(strings.ToLower(turnName), " ", "-"))
 
-		return cctx.EphemeralImageResponse(message, filename, "image/png", board)
+		return cctx.EphemeralImageResponse(message, types.ImageResponse{
+			Filename:    filename,
+			ContentType: "image/png",
+			Data:        board,
+		})
 	},
 }

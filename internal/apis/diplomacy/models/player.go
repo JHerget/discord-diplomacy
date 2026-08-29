@@ -7,3 +7,7 @@ type Player struct {
 	Color     string  `json:"color"`
 	IsPlaying bool    `json:"isPlaying"`
 }
+
+type CreatePlayerRequest struct {
+	UserID *string `json:"userID"`
+}

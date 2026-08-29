@@ -9,7 +9,7 @@ import (
 
 	"discord-diplomacy/internal/config"
 	"discord-diplomacy/internal/interactions"
-	"discord-diplomacy/internal/utils"
+	"discord-diplomacy/internal/types"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -80,7 +80,7 @@ func (b *Bot) handleReady(_ *discordgo.Session, ready *discordgo.Ready) {
 }
 
 func (b *Bot) handleInteraction(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
-	cctx := &utils.CommandContext{
+	cctx := &types.CommandContext{
 		Session:           session,
 		Interaction:       interaction,
 		ActiveGame:        b.GetActiveGame(),
