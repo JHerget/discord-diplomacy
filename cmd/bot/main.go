@@ -11,6 +11,7 @@ import (
 	"discord-diplomacy/internal/config"
 	"discord-diplomacy/internal/features/feedback"
 	"discord-diplomacy/internal/features/game"
+	"discord-diplomacy/internal/features/orders"
 	"discord-diplomacy/internal/features/ping"
 )
 
@@ -29,6 +30,7 @@ func main() {
 		feedback.New(),
 		ping.New(),
 		game.New(),
+		orders.New(),
 	)
 	if err != nil {
 		logger.Error("create bot", "error", err)

@@ -10,6 +10,7 @@ import (
 	"discord-diplomacy/internal/apis/diplomacy/models"
 	"discord-diplomacy/internal/interactions"
 	"discord-diplomacy/internal/types"
+	"discord-diplomacy/internal/utils"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -35,7 +36,7 @@ var dateFormat = "01/02/2006"
 
 var CreateSubcommand = types.Subcommand{
 	Name:        "create",
-	Description: "Create a new game",
+	Description: "Create a new game.",
 	Handler: func(cctx *types.CommandContext) error {
 		return cctx.Session.InteractionRespond(cctx.Interaction.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseModal,
@@ -49,7 +50,7 @@ var CreateSubcommand = types.Subcommand{
 							CustomID:    startDateInputCustomID,
 							Style:       discordgo.TextInputShort,
 							Placeholder: "mm/dd/yyyy",
-							Required:    boolPtr(true),
+							Required:    utils.BoolPtr(true),
 							MinLength:   10,
 							MaxLength:   10,
 						},
@@ -59,9 +60,9 @@ var CreateSubcommand = types.Subcommand{
 						Component: discordgo.SelectMenu{
 							CustomID:    startHourInputCustomID,
 							Placeholder: "Choose start hour",
-							MinValues:   intPtr(1),
+							MinValues:   utils.IntPtr(1),
 							MaxValues:   1,
-							Required:    boolPtr(true),
+							Required:    utils.BoolPtr(true),
 							Options:     startHourOptions(),
 						},
 					},
@@ -70,9 +71,9 @@ var CreateSubcommand = types.Subcommand{
 						Component: discordgo.SelectMenu{
 							CustomID:    timezoneInputCustomID,
 							Placeholder: "Choose timezone",
-							MinValues:   intPtr(1),
+							MinValues:   utils.IntPtr(1),
 							MaxValues:   1,
-							Required:    boolPtr(true),
+							Required:    utils.BoolPtr(true),
 							Options:     timezoneOptions(),
 						},
 					},
@@ -81,9 +82,9 @@ var CreateSubcommand = types.Subcommand{
 						Component: discordgo.SelectMenu{
 							CustomID:    daysPerTurnCustomID,
 							Placeholder: "Choose days per turn",
-							MinValues:   intPtr(1),
+							MinValues:   utils.IntPtr(1),
 							MaxValues:   1,
-							Required:    boolPtr(true),
+							Required:    utils.BoolPtr(true),
 							Options:     daysPerTurnOptions(),
 						},
 					},
@@ -99,7 +100,7 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 	if cctx.ActiveGame != nil {
 		g, err := API.GetGame(*cctx.ActiveGame)
 		if err == nil && g.InProgress {
-			return cctx.BasicEphemeralResponse(ErrGameInProgress)
+			return cctx.BasicEphemeralResponse("There is already a game in progress.")
 		}
 	}
 
@@ -215,12 +216,4 @@ func daysPerTurnOptions() []discordgo.SelectMenuOption {
 	}
 
 	return options
-}
-
-func boolPtr(value bool) *bool {
-	return &value
-}
-
-func intPtr(value int) *int {
-	return &value
 }

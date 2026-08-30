@@ -131,6 +131,31 @@ func (a *API) DeletePlayer(gameID string, playerID string) error {
 	return nil
 }
 
+func (a *API) CreateOrder(gameID string, turnID string, req models.CreateOrderRequest) (*models.Order, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/v1/games/%s/turns/%s/orders", a.baseURL, gameID, turnID)
+	res, err := http.Post(url, "application/json", bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, decodeError(res)
+	}
+
+	var o models.Order
+	if err = json.NewDecoder(res.Body).Decode(&o); err != nil {
+		return nil, err
+	}
+
+	return &o, nil
+}
+
 func decodeError(res *http.Response) error {
 	var body models.Error
 	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {

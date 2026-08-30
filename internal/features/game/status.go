@@ -9,7 +9,7 @@ import (
 
 var StatusSubcommand = types.Subcommand{
 	Name:        "status",
-	Description: "Get the status of the current game",
+	Description: "Get the status of the current game.",
 	Handler: func(cctx *types.CommandContext) error {
 		API := diplomacy.NewAPI()
 

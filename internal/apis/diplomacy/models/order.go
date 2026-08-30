@@ -7,3 +7,9 @@ type Order struct {
 	CreatedDate int    `json:"createdDate"`
 	Value       string `json:"value"`
 }
+
+type CreateOrderRequest struct {
+	PlayerName string `json:"playerName"`
+	PhaseID    string `json:"phaseID"`
+	Value      string `json:"value"`
+}

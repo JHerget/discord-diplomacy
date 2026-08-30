@@ -10,15 +10,15 @@ import (
 
 var JoinSubcommand = types.Subcommand{
 	Name:        "join",
-	Description: "Join the current game",
+	Description: "Join the current game.",
 	Handler: func(cctx *types.CommandContext) error {
 		if cctx.ActiveGame == nil {
-			return cctx.BasicEphemeralResponse(ErrNoActiveGame)
+			return cctx.BasicEphemeralResponse("There is no active game.")
 		}
 
 		userID, ok := cctx.InteractionUserID()
 		if !ok {
-			return cctx.BasicEphemeralResponse(ErrUnknownUser)
+			return cctx.BasicEphemeralResponse("Could not identify the invoking user.")
 		}
 
 		API := diplomacy.NewAPI()

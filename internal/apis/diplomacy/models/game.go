@@ -1,5 +1,7 @@
 package models
 
+import "errors"
+
 type Game struct {
 	ID            string       `json:"id"`
 	ExternalID    *string      `json:"externalId"`
@@ -35,6 +37,16 @@ func (g *Game) CurrentTurn() *Turn {
 	}
 
 	return latestTurn
+}
+
+func (g *Game) FindPlayerByUserID(userID string) (*Player, error) {
+	for i := range g.Players {
+		if g.Players[i].UserID != nil && *g.Players[i].UserID == userID {
+			return &g.Players[i], nil
+		}
+	}
+
+	return nil, errors.New("player not found")
 }
 
 type CreateGameRequest struct {

@@ -6,6 +6,7 @@ import (
 
 	"discord-diplomacy/internal/interactions"
 	"discord-diplomacy/internal/types"
+	"discord-diplomacy/internal/utils"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -50,7 +51,7 @@ func (c Command) Handle(cctx *types.CommandContext) error {
 							Label:       "What would you like to share?",
 							Style:       discordgo.TextInputParagraph,
 							Placeholder: "Enter your feedback",
-							Required:    boolPtr(true),
+							Required:    utils.BoolPtr(true),
 							MaxLength:   1000,
 						},
 					},
@@ -58,10 +59,6 @@ func (c Command) Handle(cctx *types.CommandContext) error {
 			},
 		},
 	})
-}
-
-func boolPtr(value bool) *bool {
-	return &value
 }
 
 func (c Command) Submit(cctx *types.CommandContext) error {
