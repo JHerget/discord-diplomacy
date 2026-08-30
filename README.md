@@ -1,6 +1,6 @@
 # Discord Diplomacy Bot
 
-A small Discord bot written in Go with [DiscordGo](https://github.com/bwmarrin/discordgo). It includes an extensible interaction registry, a `/ping` command, and a `/feedback` command that opens a modal.
+A small Discord bot written in Go with [DiscordGo](https://github.com/bwmarrin/discordgo). It includes an extensible interaction registry and commands for managing a Diplomacy game.
 
 ## Prerequisites
 
@@ -36,8 +36,6 @@ make run
 Use `make format` to format the Go source or `make build` to create `bin/bot`.
 
 On startup, the bot replaces the development guild's application command definitions with the commands in its registry. This makes command changes appear quickly and removes stale guild commands. Commands remain registered when the process shuts down.
-
-Try `/ping` for a basic ephemeral response. Run `/feedback` to open the example modal; submitting it produces an ephemeral confirmation and does not persist the entered text.
 
 ## Add a feature
 

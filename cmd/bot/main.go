@@ -9,10 +9,8 @@ import (
 
 	"discord-diplomacy/internal/bot"
 	"discord-diplomacy/internal/config"
-	"discord-diplomacy/internal/features/feedback"
 	"discord-diplomacy/internal/features/game"
 	"discord-diplomacy/internal/features/orders"
-	"discord-diplomacy/internal/features/ping"
 )
 
 func main() {
@@ -27,8 +25,6 @@ func main() {
 	application, err := bot.New(
 		cfg,
 		logger,
-		feedback.New(),
-		ping.New(),
 		game.New(),
 		orders.New(),
 	)
