@@ -75,6 +75,14 @@ func (b *Bot) Run(ctx context.Context) error {
 	return nil
 }
 
+func (b *Bot) PostMessage(channelID string, content string) error {
+	if _, err := b.session.ChannelMessageSend(channelID, content); err != nil {
+		return fmt.Errorf("send Discord message: %w", err)
+	}
+
+	return nil
+}
+
 func (b *Bot) handleReady(_ *discordgo.Session, ready *discordgo.Ready) {
 	b.logger.Info("connected to Discord", "user", ready.User.String())
 }

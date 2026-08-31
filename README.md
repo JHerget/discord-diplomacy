@@ -23,9 +23,21 @@ The bot reads configuration directly from environment variables. The project doe
 ```sh
 export DISCORD_BOT_TOKEN="your-bot-token"
 export DISCORD_GUILD_ID="your-development-guild-id"
+export AWS_REGION="us-west-2"
+export SQS_QUEUE_URL="https://sqs.us-west-2.amazonaws.com/123456789012/your-queue"
 ```
 
 See `.env.example` for the required variable names. Never commit a real bot token.
+
+The SQS consumer expects plain Discord notification messages:
+
+```json
+{
+    "type": "discord_message",
+    "channel_id": "123456789012345678",
+    "content": "Message text to post"
+}
+```
 
 ## Run
 

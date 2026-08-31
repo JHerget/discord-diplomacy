@@ -5,12 +5,17 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"discord-diplomacy/internal/bot"
 	"discord-diplomacy/internal/config"
 	"discord-diplomacy/internal/features/game"
 	"discord-diplomacy/internal/features/orders"
+	"discord-diplomacy/internal/sqsconsumer"
+
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 )
 
 func main() {
@@ -36,8 +41,42 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	if err := application.Run(ctx); err != nil {
-		logger.Error("bot stopped with an error", "error", err)
+	awsCfg, err := awsconfig.LoadDefaultConfig(ctx, awsconfig.WithRegion(cfg.AWSRegion))
+	if err != nil {
+		logger.Error("load AWS configuration", "error", err)
+		os.Exit(1)
+	}
+
+	consumer := sqsconsumer.New(sqs.NewFromConfig(awsCfg), logger, application, cfg.SQSQueueURL)
+
+	runCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	errs := make(chan error, 2)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		errs <- application.Run(runCtx)
+	}()
+	go func() {
+		defer wg.Done()
+		errs <- consumer.Run(runCtx)
+	}()
+	go func() {
+		wg.Wait()
+		close(errs)
+	}()
+
+	var runErr error
+	for err := range errs {
+		if err != nil && runErr == nil {
+			runErr = err
+			cancel()
+		}
+	}
+	if runErr != nil {
+		logger.Error("application stopped with an error", "error", runErr)
 		os.Exit(1)
 	}
 
