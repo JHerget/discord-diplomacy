@@ -75,8 +75,8 @@ func (b *Bot) Run(ctx context.Context) error {
 	return nil
 }
 
-func (b *Bot) PostMessage(channelID string, content string) error {
-	if _, err := b.session.ChannelMessageSend(channelID, content); err != nil {
+func (b *Bot) PostMessage(channelID string, message *discordgo.MessageSend) error {
+	if _, err := b.session.ChannelMessageSendComplex(channelID, message); err != nil {
 		return fmt.Errorf("send Discord message: %w", err)
 	}
 

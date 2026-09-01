@@ -6,4 +6,4 @@ build: format
 	go build -o bin/bot ./cmd/bot
 
 run: build
-	./bin/bot
+	source .env.local; ./bin/bot

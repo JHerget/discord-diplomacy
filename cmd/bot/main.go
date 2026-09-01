@@ -21,9 +21,20 @@ import (
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	runCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	cfg, err := config.Load()
 	if err != nil {
 		logger.Error("invalid configuration", "error", err)
+		os.Exit(1)
+	}
+
+	awsCfg, err := awsconfig.LoadDefaultConfig(ctx, awsconfig.WithRegion(cfg.AWSRegion))
+	if err != nil {
+		logger.Error("load AWS configuration", "error", err)
 		os.Exit(1)
 	}
 
@@ -38,19 +49,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
-
-	awsCfg, err := awsconfig.LoadDefaultConfig(ctx, awsconfig.WithRegion(cfg.AWSRegion))
-	if err != nil {
-		logger.Error("load AWS configuration", "error", err)
-		os.Exit(1)
-	}
-
 	consumer := sqsconsumer.New(sqs.NewFromConfig(awsCfg), logger, application, cfg.SQSQueueURL)
-
-	runCtx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
 	errs := make(chan error, 2)
 	var wg sync.WaitGroup

@@ -2,25 +2,20 @@ package sqsconsumer
 
 import (
 	"context"
+	"discord-diplomacy/internal/types"
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	sqstypes "github.com/aws/aws-sdk-go-v2/service/sqs/types"
-)
-
-const (
-	messageTypeDiscordMessage = "discord_message"
-	maxDiscordContentLength   = 2000
+	"github.com/bwmarrin/discordgo"
 )
 
 type MessagePoster interface {
-	PostMessage(channelID string, content string) error
+	PostMessage(channelID string, message *discordgo.MessageSend) error
 }
 
 type Consumer struct {
@@ -28,12 +23,6 @@ type Consumer struct {
 	logger   *slog.Logger
 	poster   MessagePoster
 	queueURL string
-}
-
-type NotificationMessage struct {
-	Type      string `json:"type"`
-	ChannelID string `json:"channel_id"`
-	Content   string `json:"content"`
 }
 
 func New(client *sqs.Client, logger *slog.Logger, poster MessagePoster, queueURL string) *Consumer {
@@ -95,7 +84,7 @@ func (c *Consumer) handleMessage(ctx context.Context, message sqstypes.Message) 
 }
 
 func (c *Consumer) processMessage(message sqstypes.Message) error {
-	var notification NotificationMessage
+	var notification types.NotificationMessage
 	if err := json.Unmarshal([]byte(aws.ToString(message.Body)), &notification); err != nil {
 		return fmt.Errorf("decode message body: %w", err)
 	}
@@ -104,25 +93,11 @@ func (c *Consumer) processMessage(message sqstypes.Message) error {
 		return err
 	}
 
-	if err := c.poster.PostMessage(notification.ChannelID, notification.Content); err != nil {
+	msg := &discordgo.MessageSend{
+		Content: notification.Content,
+	}
+	if err := c.poster.PostMessage(notification.ChannelID, msg); err != nil {
 		return err
-	}
-
-	return nil
-}
-
-func (m NotificationMessage) Validate() error {
-	if m.Type != messageTypeDiscordMessage {
-		return fmt.Errorf("unsupported message type %q", m.Type)
-	}
-	if strings.TrimSpace(m.ChannelID) == "" {
-		return fmt.Errorf("channel_id is required")
-	}
-	if strings.TrimSpace(m.Content) == "" {
-		return fmt.Errorf("content is required")
-	}
-	if utf8.RuneCountInString(m.Content) > maxDiscordContentLength {
-		return fmt.Errorf("content exceeds %d characters", maxDiscordContentLength)
 	}
 
 	return nil

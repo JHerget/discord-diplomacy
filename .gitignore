@@ -2,3 +2,4 @@
 /bin/
 /discord-diplomacy
 *.log
+.env.local
