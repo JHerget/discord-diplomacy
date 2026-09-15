@@ -1,3 +1,6 @@
+export AWS_REGION=us-west-2
+export SQS_QUEUE_URL=https://sqs.us-west-2.amazonaws.com/620486971062/diplomacy-api-v1-events
+
 format:
 	gofmt -w .
 

@@ -75,8 +75,12 @@ func (b *Bot) Run(ctx context.Context) error {
 	return nil
 }
 
-func (b *Bot) PostMessage(channelID string, message *discordgo.MessageSend) error {
-	if _, err := b.session.ChannelMessageSendComplex(channelID, message); err != nil {
+func (b *Bot) PostMessage(notification types.NotificationMessage) error {
+	message, err := interactions.TurnSummary(notification.GameID, notification.TurnID)
+	if err != nil {
+		return err
+	}
+	if _, err := b.session.ChannelMessageSendComplex(notification.ChannelID, message); err != nil {
 		return fmt.Errorf("send Discord message: %w", err)
 	}
 

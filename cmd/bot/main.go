@@ -9,9 +9,9 @@ import (
 	"syscall"
 
 	"discord-diplomacy/internal/bot"
+	"discord-diplomacy/internal/commands/game"
+	"discord-diplomacy/internal/commands/orders"
 	"discord-diplomacy/internal/config"
-	"discord-diplomacy/internal/features/game"
-	"discord-diplomacy/internal/features/orders"
 	"discord-diplomacy/internal/sqsconsumer"
 
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"

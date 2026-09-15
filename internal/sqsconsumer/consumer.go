@@ -11,11 +11,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	sqstypes "github.com/aws/aws-sdk-go-v2/service/sqs/types"
-	"github.com/bwmarrin/discordgo"
 )
 
 type MessagePoster interface {
-	PostMessage(channelID string, message *discordgo.MessageSend) error
+	PostMessage(types.NotificationMessage) error
 }
 
 type Consumer struct {
@@ -93,10 +92,7 @@ func (c *Consumer) processMessage(message sqstypes.Message) error {
 		return err
 	}
 
-	msg := &discordgo.MessageSend{
-		Content: notification.Content,
-	}
-	if err := c.poster.PostMessage(notification.ChannelID, msg); err != nil {
+	if err := c.poster.PostMessage(notification); err != nil {
 		return err
 	}
 

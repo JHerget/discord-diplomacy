@@ -49,6 +49,16 @@ func (g *Game) FindPlayerByUserID(userID string) (*Player, error) {
 	return nil, errors.New("player not found")
 }
 
+func (g *Game) FindTurn(turnID string) (*Turn, bool) {
+	for _, turn := range g.Turns {
+		if turn.ID == turnID {
+			return &turn, true
+		}
+	}
+
+	return nil, false
+}
+
 type CreateGameRequest struct {
 	ExternalID    *string `json:"externalId"`
 	MapID         string  `json:"mapId"`
