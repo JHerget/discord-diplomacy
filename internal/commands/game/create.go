@@ -133,8 +133,9 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 		return cctx.BasicEphemeralResponse(err.Error())
 	}
 
+	channelID := "1551271242940678295"
 	g, err := API.CreateGame(models.CreateGameRequest{
-		ExternalID:    &cctx.GuildID,
+		ExternalID:    &channelID,
 		MapID:         "6956498133c5739468982b62",
 		DaysPerTurn:   daysPerTurn,
 		TurnStartHour: startHour,
