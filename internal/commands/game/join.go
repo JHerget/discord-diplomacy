@@ -29,6 +29,8 @@ var JoinSubcommand = types.Subcommand{
 			return cctx.BasicEphemeralResponse(err.Error())
 		}
 
-		return cctx.BasicResponse(fmt.Sprintf("%s joined the game as %s", cctx.InteractionUserName(), player.Name))
+		if game.ExternalID != nil {
+			return cctx.BasicChannelResponse(fmt.Sprintf("%s joined the game as %s", cctx.InteractionUserName(), player.Name))
+		}
 	},
 }

@@ -90,6 +90,11 @@ func (cc *CommandContext) BasicResponse(content string) error {
 	return cc.basicResponse(content, discordgo.MessageFlags(0))
 }
 
+func (cc *CommandContext) BasicChannelResponse(channelID, content string) error {
+	_, err := cc.Session.ChannelMessageSend(channelID, content)
+	return err
+}
+
 func (cc *CommandContext) BasicEphemeralResponse(content string) error {
 	return cc.basicResponse(content, discordgo.MessageFlagsEphemeral)
 }

@@ -21,6 +21,7 @@ const (
 	startHourInputCustomID = "game:create:start-hour"
 	timezoneInputCustomID  = "game:create:timezone"
 	daysPerTurnCustomID    = "game:create:days-per-turn"
+	updatesChannelCustomID = "game:create:updates-channel"
 )
 
 var timezoneOffsets = map[string]int{
@@ -88,6 +89,18 @@ var CreateSubcommand = types.Subcommand{
 							Options:     daysPerTurnOptions(),
 						},
 					},
+					discordgo.Label{
+						Label: "Game Updates Channel",
+						Component: discordgo.SelectMenu{
+							MenuType:     discordgo.ChannelSelectMenu,
+							CustomID:     updatesChannelCustomID,
+							Placeholder:  "Choose game updates channel",
+							MinValues:    utils.IntPtr(1),
+							MaxValues:    1,
+							Required:     utils.BoolPtr(true),
+							ChannelTypes: []discordgo.ChannelType{discordgo.ChannelTypeGuildText},
+						},
+					},
 				},
 			},
 		})
@@ -133,7 +146,11 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 		return cctx.BasicEphemeralResponse(err.Error())
 	}
 
-	channelID := "1551271242940678295"
+	channelID := values[updatesChannelCustomID]
+	if channelID == "" {
+		return cctx.BasicEphemeralResponse("Select a game updates channel.")
+	}
+
 	g, err := API.CreateGame(models.CreateGameRequest{
 		ExternalID:    &channelID,
 		MapID:         "6956498133c5739468982b62",
