@@ -151,7 +151,7 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 		return cctx.BasicEphemeralResponse("Select a game updates channel.")
 	}
 
-	g, err := API.CreateGame(models.CreateGameRequest{
+	game, err := API.CreateGame(models.CreateGameRequest{
 		ExternalID:    &channelID,
 		MapID:         "6956498133c5739468982b62",
 		DaysPerTurn:   daysPerTurn,
@@ -163,9 +163,9 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 		return cctx.BasicEphemeralResponse(err.Error())
 	}
 
-	cctx.SetActiveGame(g.ID)
+	cctx.SetActiveGame(game.ID)
 
-	return cctx.BasicResponse(fmt.Sprintf("New game starting on %s!", startDate.Format(dateFormat)))
+	return cctx.BasicChannelResponse(channelID, fmt.Sprintf("New game starting on %s!", startDate.Format(dateFormat)))
 }
 
 func parseStartDate(value string) (time.Time, error) {

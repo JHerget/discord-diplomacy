@@ -22,6 +22,7 @@ var JoinSubcommand = types.Subcommand{
 		}
 
 		API := diplomacy.NewAPI()
+
 		player, err := API.CreatePlayer(*cctx.ActiveGame, models.CreatePlayerRequest{
 			UserID: &userID,
 		})
@@ -29,8 +30,18 @@ var JoinSubcommand = types.Subcommand{
 			return cctx.BasicEphemeralResponse(err.Error())
 		}
 
-		if game.ExternalID != nil {
-			return cctx.BasicChannelResponse(fmt.Sprintf("%s joined the game as %s", cctx.InteractionUserName(), player.Name))
+		game, err := API.GetGame(*cctx.ActiveGame)
+		if err != nil {
+			return cctx.BasicEphemeralResponse(err.Error())
 		}
+
+		if game.ExternalID != nil {
+			cctx.BasicChannelResponse(
+				*game.ExternalID,
+				fmt.Sprintf("%s joined the game as %s.", cctx.InteractionUserName(), player.Name),
+			)
+		}
+
+		return cctx.BasicEphemeralResponse(fmt.Sprintf("You joined the game as %s.", player.Name))
 	},
 }
