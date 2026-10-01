@@ -1,0 +1,18 @@
+[Unit]
+Description=Discord bot for playing Diplomacy.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/jherget/code/discord-diplomacy
+ExecStart=/home/jherget/code/discord-diplomacy/bin
+
+Environment="AWS_REGION=us-west-2"
+Environment="SQS_QUEUE_URL=https://sqs.us-west-2.amazonaws.com/620486971062/diplomacy-api-v1-events"
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -10,3 +10,8 @@ build: format
 
 run: build
 	source .env.local; ./bin/bot
+
+setup: build
+	mkdir -p $(HOME)/.diplomacy
+	test -f $(HOME)/.diplomacy/discord-diplomacy.json || echo '{}' > $(HOME)/.diplomacy/discord-diplomacy
+	cp discord-diplomacy.service /etc/systemd/system
