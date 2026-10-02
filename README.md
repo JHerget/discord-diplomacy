@@ -47,6 +47,31 @@ make run
 
 Use `make format` to format the Go source or `make build` to create `bin/bot`.
 
+## Run as a systemd service
+
+The supplied unit runs as `jherget` from `/home/jherget/code/discord-diplomacy`.
+Create `.env.local` in that directory with the required variables shown above,
+using `NAME=value` assignments without `export`. Systemd loads this file; its
+AWS values override the defaults in the unit. The service uses `jherget`'s home
+directory for saved game state and AWS credentials.
+
+Run setup as `jherget` (do not run `sudo make setup`):
+
+```sh
+make setup
+```
+
+Setup builds the bot, initializes the saved state file if missing, and uses
+`sudo` to install, enable, and restart the service. Running it again applies
+updated binaries and unit settings while preserving saved game state.
+
+Check service status and recent logs with:
+
+```sh
+systemctl status discord-diplomacy --no-pager -l
+sudo journalctl -u discord-diplomacy -n 50 --no-pager
+```
+
 On startup, the bot replaces the development guild's application command definitions with the commands in its registry. This makes command changes appear quickly and removes stale guild commands. Commands remain registered when the process shuts down.
 
 ## Add a feature

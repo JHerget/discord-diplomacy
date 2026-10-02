@@ -12,8 +12,10 @@ run: build
 	source .env.local; ./bin/bot
 
 setup: build
-	mkdir -p $(HOME)/.diplomacy
-	test -f $(HOME)/.diplomacy/discord-diplomacy.json || echo '{}' > $(HOME)/.diplomacy/discord-diplomacy
-	cp discord-diplomacy.service /etc/systemd/system
+	test -f .env.local
+	mkdir -p "$(HOME)/.diplomacy"
+	test -f "$(HOME)/.diplomacy/discord-diplomacy.json" || echo '{}' > "$(HOME)/.diplomacy/discord-diplomacy.json"
+	install -m 644 discord-diplomacy.service /etc/systemd/system/discord-diplomacy.service
 	systemctl daemon-reload
-	systemctl enable --now discord-diplomacy
+	systemctl enable discord-diplomacy
+	systemctl restart discord-diplomacy
