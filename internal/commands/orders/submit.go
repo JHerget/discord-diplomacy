@@ -82,7 +82,6 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 
 	if _, err := API.CreateOrder(g.ID, turn.ID, models.CreateOrderRequest{
 		PlayerName: player.Name,
-		PhaseID:    turn.PhaseID,
 		Value:      value,
 	}); err != nil {
 		return cctx.BasicEphemeralResponse(err.Error())
