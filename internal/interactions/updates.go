@@ -30,6 +30,8 @@ func TurnSummary(gameID string, turnID string) (*discordgo.MessageSend, error) {
 		return nil, fmt.Errorf("The turn id '%s' is invalid.", turnID)
 	}
 
+	previousTurn, ok := g.FindTurnByNumber(turn.TurnNumber - 1)
+
 	message := fmt.Sprintf(`
 	# %s
 	## %s

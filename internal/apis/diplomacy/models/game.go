@@ -20,23 +20,18 @@ type Game struct {
 }
 
 func (g *Game) CurrentTurn() *Turn {
-	if len(g.Turns) == 0 {
+	target := len(g.Turns)
+	if target <= 0 {
 		return nil
 	}
 
-	var latestTurn *Turn
 	for _, turn := range g.Turns {
-		if latestTurn == nil {
-			latestTurn = &turn
-			continue
-		}
-
-		if turn.TurnNumber > latestTurn.TurnNumber {
-			latestTurn = &turn
+		if turn.TurnNumber == target {
+			return &turn
 		}
 	}
 
-	return latestTurn
+	return nil
 }
 
 func (g *Game) FindPlayerByUserID(userID string) (*Player, error) {
@@ -52,6 +47,16 @@ func (g *Game) FindPlayerByUserID(userID string) (*Player, error) {
 func (g *Game) FindTurn(turnID string) (*Turn, bool) {
 	for _, turn := range g.Turns {
 		if turn.ID == turnID {
+			return &turn, true
+		}
+	}
+
+	return nil, false
+}
+
+func (g *Game) FindTurnByNumber(turnNumber int) (*Turn, bool) {
+	for _, turn := range g.Turns {
+		if turn.TurnNumber == turnNumber {
 			return &turn, true
 		}
 	}
