@@ -30,12 +30,24 @@ func TurnSummary(gameID string, turnID string) (*discordgo.MessageSend, error) {
 		return nil, fmt.Errorf("The turn id '%s' is invalid.", turnID)
 	}
 
+	var ordersMessage string
 	previousTurn, ok := g.FindTurnByNumber(turn.TurnNumber - 1)
+	if ok {
+		ordersMessage = "## Orders"
+		for _, order := range previousTurn.Orders {
+			ordersMessage = fmt.Sprintf(`
+			%s
+
+			### %s
+			%s`, ordersMessage, order.PlayerName, order.Value)
+		}
+	}
 
 	message := fmt.Sprintf(`
 	# %s
 	## %s
-	`, g.Map.Name, turn.Name())
+	%s
+	`, g.Map.Name, turn.Name(), ordersMessage)
 	filename := fmt.Sprintf("diplomacy-%s.png", strings.ReplaceAll(strings.ToLower(turn.Name()), " ", "-"))
 
 	return &discordgo.MessageSend{
