@@ -36,11 +36,7 @@ func TurnSummary(gameID string, turnID string) (*discordgo.MessageSend, error) {
 		ordersMessage = previousTurn.PrettyPrint()
 	}
 
-	message := fmt.Sprintf(`
-	# %s
-	## %s
-	%s
-	`, g.Map.Name, turn.Name(), ordersMessage)
+	message := fmt.Sprintf(`# %s\n## %s\n%s`, g.Map.Name, turn.Name(), ordersMessage)
 	filename := fmt.Sprintf("diplomacy-%s.png", strings.ReplaceAll(strings.ToLower(turn.Name()), " ", "-"))
 
 	return &discordgo.MessageSend{
