@@ -75,7 +75,15 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 	}
 
 	values := interactions.TextInputValues(cctx.Interaction.ModalSubmitData())
-	value := strings.TrimSpace(values[submitInputCustomID])
+
+	orders := strings.FieldsFunc(values[submitInputCustomID], func(r rune) bool {
+		return r == '\r' || r == '\n'
+	})
+	for i := range orders {
+		orders[i] = strings.TrimSpace(orders[i])
+	}
+
+	value := strings.Join(orders, ",")
 	if value == "" {
 		return cctx.BasicEphemeralResponse("Enter orders before submitting.")
 	}
