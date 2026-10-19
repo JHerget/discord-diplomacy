@@ -33,14 +33,7 @@ func TurnSummary(gameID string, turnID string) (*discordgo.MessageSend, error) {
 	var ordersMessage string
 	previousTurn, ok := g.FindTurnByNumber(turn.TurnNumber - 1)
 	if ok {
-		ordersMessage = "## Orders"
-		for _, order := range previousTurn.Orders {
-			ordersMessage = fmt.Sprintf(`
-			%s
-
-			### %s
-			%s`, ordersMessage, order.PlayerName, order.Value)
-		}
+		ordersMessage = previousTurn.PrettyPrint()
 	}
 
 	message := fmt.Sprintf(`
