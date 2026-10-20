@@ -30,7 +30,7 @@ func (t *Turn) PrettyPrint() string {
 
 	var value string
 	for _, order := range t.Orders {
-		value = fmt.Sprintf(`%s\n\n### %s\n%s`, value, order.PlayerName, order.PrettyPrint())
+		value = fmt.Sprintf("%s\n\n### %s\n%s", value, order.PlayerName, order.PrettyPrint())
 	}
 
 	return value
