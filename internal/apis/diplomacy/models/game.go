@@ -1,6 +1,11 @@
 package models
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"sort"
+	"strings"
+)
 
 type Game struct {
 	ID            string       `json:"id"`
@@ -17,6 +22,15 @@ type Game struct {
 	EndDate       int          `json:"endDate"`
 	InProgress    bool         `json:"inProgress"`
 	IsDeleted     bool         `json:"isDeleted"`
+}
+
+type CreateGameRequest struct {
+	ExternalID    *string `json:"externalId"`
+	MapID         string  `json:"mapId"`
+	DaysPerTurn   int     `json:"daysPerTurn"`
+	TurnStartHour int     `json:"turnStartHour"`
+	Timezone      int     `json:"timezone"`
+	StartDate     int     `json:"startDate"`
 }
 
 func (g *Game) CurrentTurn() *Turn {
@@ -64,11 +78,41 @@ func (g *Game) FindTurnByNumber(turnNumber int) (*Turn, bool) {
 	return nil, false
 }
 
-type CreateGameRequest struct {
-	ExternalID    *string `json:"externalId"`
-	MapID         string  `json:"mapId"`
-	DaysPerTurn   int     `json:"daysPerTurn"`
-	TurnStartHour int     `json:"turnStartHour"`
-	Timezone      int     `json:"timezone"`
-	StartDate     int     `json:"startDate"`
+func (g *Game) GameEndSummary() string {
+	playerScores := make(map[string]int)
+
+	for _, p := range g.Board {
+		if p.SupplyCenter == nil {
+			continue
+		}
+		if p.SupplyCenter.ControlledBy == nil {
+			continue
+		}
+
+		playerScores[*p.SupplyCenter.ControlledBy]++
+	}
+
+	highestScore := 0
+	for _, score := range playerScores {
+		if score > highestScore {
+			highestScore = score
+		}
+	}
+
+	var leaders []string
+	for player, score := range playerScores {
+		if score == highestScore {
+			leaders = append(leaders, player)
+		}
+	}
+	sort.Strings(leaders)
+
+	switch len(leaders) {
+	case 0:
+		return "The game has ended!"
+	case 1:
+		return fmt.Sprintf("The game has ended! %s wins!", leaders[0])
+	default:
+		return fmt.Sprintf("The game has ended in a draw between %s!", strings.Join(leaders, " and "))
+	}
 }
