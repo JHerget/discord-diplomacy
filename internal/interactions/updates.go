@@ -27,25 +27,30 @@ func TurnSummary(gameID string, turnID string) (*discordgo.MessageSend, error) {
 		return nil, fmt.Errorf("The turn id '%s' is invalid.", turnID)
 	}
 
-	additionalInfo := turn.PrettyPrint()
-	if g.InProgress {
-		previousTurn, ok := g.FindTurnByNumber(turn.TurnNumber - 1)
-		if ok {
-			additionalInfo = previousTurn.PrettyPrint()
-		}
-	}
-	if !g.InProgress {
-		additionalInfo = g.GameEndSummary()
-	}
+	var message string
+	previousTurn, previousTurnFound := g.FindTurnByNumber(turn.TurnNumber - 1)
 
-	message := fmt.Sprintf("# %s\n## %s\n%s", g.Map.Name, turn.Name(), additionalInfo)
-	filename := fmt.Sprintf("diplomacy-%s.png", strings.ReplaceAll(strings.ToLower(turn.Name()), " ", "-"))
+	if g.InProgress {
+		switch previousTurnFound {
+		case true:
+			message = fmt.Sprintf("# %s\n## Previous Turn: %s\n%s\n## New Turn: %s",
+				g.Map.Name,
+				previousTurn.Name(),
+				previousTurn.PrettyPrint(),
+				turn.Name(),
+			)
+		case false:
+			message = fmt.Sprintf("# %s\n## New Turn: %s", g.Map.Name, turn.Name())
+		}
+	} else {
+		message = fmt.Sprintf("# %s\n## %s\n%s", g.Map.Name, turn.Name(), g.GameEndSummary())
+	}
 
 	return &discordgo.MessageSend{
 		Content: message,
 		Files: []*discordgo.File{
 			{
-				Name:        filename,
+				Name:        fmt.Sprintf("diplomacy-%s.png", strings.ReplaceAll(strings.ToLower(turn.Name()), " ", "-")),
 				ContentType: "image/png",
 				Reader:      bytes.NewReader(board),
 			},
