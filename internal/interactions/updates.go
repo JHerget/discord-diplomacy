@@ -16,9 +16,6 @@ func TurnSummary(gameID string, turnID string) (*discordgo.MessageSend, error) {
 	if err != nil {
 		return nil, fmt.Errorf("The game id '%s' is invalid.", gameID)
 	}
-	if !g.InProgress {
-		return nil, fmt.Errorf("The game with id '%s' is not in progress.", gameID)
-	}
 
 	board, err := API.GetBoard(g.ID)
 	if err != nil {
@@ -31,7 +28,7 @@ func TurnSummary(gameID string, turnID string) (*discordgo.MessageSend, error) {
 	}
 
 	additionalInfo := turn.PrettyPrint()
-	if g.InProgress {		
+	if g.InProgress {
 		previousTurn, ok := g.FindTurnByNumber(turn.TurnNumber - 1)
 		if ok {
 			additionalInfo = previousTurn.PrettyPrint()

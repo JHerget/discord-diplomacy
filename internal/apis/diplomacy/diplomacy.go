@@ -22,8 +22,8 @@ func NewAPI() API {
 }
 
 func (a *API) GetGame(gameID string) (*models.Game, error) {
-	url := fmt.Sprintf("%s/v1/games/%s", a.baseURL, gameID)
-	res, err := http.Get(url)
+	URL := fmt.Sprintf("%s/v1/games/%s", a.baseURL, gameID)
+	res, err := http.Get(URL)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +42,8 @@ func (a *API) GetGame(gameID string) (*models.Game, error) {
 }
 
 func (a *API) GetBoard(gameID string) ([]byte, error) {
-	url := fmt.Sprintf("%s/v1/games/%s/board", a.baseURL, gameID)
-	res, err := http.Get(url)
+	URL := fmt.Sprintf("%s/v1/games/%s/board", a.baseURL, gameID)
+	res, err := http.Get(URL)
 	if err != nil {
 		return nil, err
 	}
@@ -67,8 +67,8 @@ func (a *API) CreateGame(req models.CreateGameRequest) (*models.Game, error) {
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/v1/games", a.baseURL)
-	res, err := http.Post(url, "application/json", bytes.NewReader(body))
+	URL := fmt.Sprintf("%s/v1/games", a.baseURL)
+	res, err := http.Post(URL, "application/json", bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +92,8 @@ func (a *API) CreatePlayer(gameID string, req models.CreatePlayerRequest) (*mode
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/v1/games/%s/players", a.baseURL, gameID)
-	res, err := http.Post(url, "application/json", bytes.NewReader(body))
+	URL := fmt.Sprintf("%s/v1/games/%s/players", a.baseURL, gameID)
+	res, err := http.Post(URL, "application/json", bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
@@ -112,8 +112,8 @@ func (a *API) CreatePlayer(gameID string, req models.CreatePlayerRequest) (*mode
 }
 
 func (a *API) DeletePlayer(gameID string, playerID string) error {
-	url := fmt.Sprintf("%s/v1/games/%s/players/%s", a.baseURL, gameID, playerID)
-	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	URL := fmt.Sprintf("%s/v1/games/%s/players/%s", a.baseURL, gameID, playerID)
+	req, err := http.NewRequest(http.MethodDelete, URL, nil)
 	if err != nil {
 		return err
 	}
@@ -137,8 +137,8 @@ func (a *API) CreateOrder(gameID string, turnID string, req models.CreateOrderRe
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/v1/games/%s/turns/%s/orders", a.baseURL, gameID, turnID)
-	res, err := http.Post(url, "application/json", bytes.NewReader(body))
+	URL := fmt.Sprintf("%s/v1/games/%s/turns/%s/orders", a.baseURL, gameID, turnID)
+	res, err := http.Post(URL, "application/json", bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
