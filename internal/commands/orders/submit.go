@@ -16,6 +16,7 @@ import (
 const (
 	submitModalCustomID = "orders:submit"
 	submitInputCustomID = "orders:value"
+	maxResponseLength   = 2000
 )
 
 var SubmitSubcommand = types.Subcommand{
@@ -88,12 +89,62 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 		return cctx.BasicEphemeralResponse("Enter orders before submitting.")
 	}
 
-	if _, err := API.CreateOrder(g.ID, turn.ID, models.CreateOrderRequest{
+	order, err := API.CreateOrder(g.ID, turn.ID, models.CreateOrderRequest{
 		PlayerName: player.Name,
 		Value:      value,
-	}); err != nil {
+	})
+	if err != nil {
 		return cctx.BasicEphemeralResponse(err.Error())
 	}
 
-	return cctx.BasicEphemeralResponse(fmt.Sprintf("Orders submitted for %s.", turn.Name()))
+	commands, err := API.GetOrderCommands(g.ID, turn.ID, order.ID)
+	return cctx.BasicEphemeralResponse(submissionResponse(turn.Name(), commands, err))
+}
+
+func submissionResponse(turnName string, commands []models.OrderCommand, commandErr error) string {
+	response := fmt.Sprintf("Orders submitted for %s.", turnName)
+	if commandErr != nil {
+		return response + "\n\nYour order formatting could not be checked."
+	}
+
+	invalid := make([]models.OrderCommand, 0)
+	for _, command := range commands {
+		if !command.Valid {
+			invalid = append(invalid, command)
+		}
+	}
+	if len(invalid) == 0 {
+		return response
+	}
+
+	response += "\n\nThe formatting of these commands was not recognized:"
+	included := 0
+	for i, command := range invalid {
+		entry := fmt.Sprintf("\n- %s", escapeInlineCode(command.Value))
+		remaining := len(invalid) - i - 1
+		candidate := response + entry
+		if remaining > 0 {
+			candidate += omittedCommandsMessage(remaining)
+		}
+		if len([]rune(candidate)) > maxResponseLength {
+			break
+		}
+
+		response += entry
+		included++
+	}
+
+	if omitted := len(invalid) - included; omitted > 0 {
+		response += omittedCommandsMessage(omitted)
+	}
+
+	return response
+}
+
+func omittedCommandsMessage(count int) string {
+	return fmt.Sprintf("\n- ... and %d additional invalid command(s) were omitted.", count)
+}
+
+func escapeInlineCode(value string) string {
+	return strings.ReplaceAll(value, "`", "\\`")
 }
