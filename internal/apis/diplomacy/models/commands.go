@@ -3,6 +3,9 @@ package models
 import (
 	"fmt"
 	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type CommandValidationResult struct {
@@ -30,12 +33,14 @@ func (c CommandValidationResults) PrettyPrint() string {
 				valid = "✅"
 			}
 
+			formattedValue := cases.Title(language.English).String(c.Value)
+
 			err := ""
 			if c.Error != "" {
 				err = fmt.Sprintf(" (%s)", c.Error)
 			}
 
-			fmt.Fprintf(&result, "%s %s%s\n", valid, c.Value, err)
+			fmt.Fprintf(&result, "%s %s%s\n", valid, formattedValue, err)
 		}
 	}
 

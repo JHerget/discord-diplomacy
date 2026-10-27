@@ -1,6 +1,6 @@
 module discord-diplomacy
 
-go 1.24.0
+go 1.26.0
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.45.1
@@ -23,4 +23,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.47.1 // indirect
 	github.com/aws/smithy-go v1.28.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
+	golang.org/x/text v0.43.0 // indirect
 )
