@@ -10,7 +10,6 @@ import (
 	"discord-diplomacy/internal/apis/diplomacy/models"
 	"discord-diplomacy/internal/interactions"
 	"discord-diplomacy/internal/types"
-	"discord-diplomacy/internal/utils"
 
 	"github.com/bwmarrin/discordgo"
 )
