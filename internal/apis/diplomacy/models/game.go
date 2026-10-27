@@ -68,16 +68,6 @@ func (g *Game) FindTurn(turnID string) (*Turn, bool) {
 	return nil, false
 }
 
-func (g *Game) FindTurnByNumber(turnNumber int) (*Turn, bool) {
-	for _, turn := range g.Turns {
-		if turn.TurnNumber == turnNumber {
-			return &turn, true
-		}
-	}
-
-	return nil, false
-}
-
 func (g *Game) GameEndSummary() string {
 	playerScores := make(map[string]int)
 

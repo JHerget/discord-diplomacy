@@ -1,6 +1,7 @@
 package types
 
 import (
+	"discord-diplomacy/internal/apis/diplomacy/models"
 	"fmt"
 	"strings"
 )
@@ -8,9 +9,10 @@ import (
 const maxDiscordContentLength = 2000
 
 type NotificationMessage struct {
-	ChannelID string `json:"channelId"`
-	GameID    string `json:"gameId"`
-	TurnID    string `json:"turnID"`
+	ChannelID          string                          `json:"channelId"`
+	GameID             string                          `json:"gameId"`
+	TurnID             string                          `json:"turnID"`
+	PreviousTurnOrders models.CommandValidationResults `json:"previousTurnOrders"`
 }
 
 func (m NotificationMessage) Validate() error {

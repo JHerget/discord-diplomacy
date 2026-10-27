@@ -76,7 +76,7 @@ func (b *Bot) Run(ctx context.Context) error {
 }
 
 func (b *Bot) PostMessage(notification types.NotificationMessage) error {
-	message, err := interactions.TurnSummary(notification.GameID, notification.TurnID)
+	message, err := interactions.TurnSummary(notification)
 	if err != nil {
 		return err
 	}

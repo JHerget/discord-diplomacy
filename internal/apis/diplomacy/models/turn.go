@@ -22,16 +22,3 @@ func (t *Turn) Name() string {
 
 	return fmt.Sprintf("%s %d", season, 1900+turn)
 }
-
-func (t *Turn) PrettyPrint() string {
-	if len(t.Orders) == 0 {
-		return ""
-	}
-
-	var value string
-	for _, order := range t.Orders {
-		value = fmt.Sprintf("%s\n\n### %s\n%s", value, order.PlayerName, order.PrettyPrint())
-	}
-
-	return value
-}
