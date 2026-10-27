@@ -1,11 +1,9 @@
 package models
 
 import (
+	"discord-diplomacy/internal/utils"
 	"fmt"
 	"strings"
-
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 type CommandValidationResult struct {
@@ -33,14 +31,12 @@ func (c CommandValidationResults) PrettyPrint() string {
 				valid = "✅"
 			}
 
-			formattedValue := cases.Title(language.English).String(c.Value)
-
 			err := ""
 			if c.Error != "" {
 				err = fmt.Sprintf(" (%s)", c.Error)
 			}
 
-			fmt.Fprintf(&result, "%s %s%s\n", valid, formattedValue, err)
+			fmt.Fprintf(&result, "%s %s%s\n", valid, utils.ToTitle(c.Value), err)
 		}
 	}
 

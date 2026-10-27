@@ -35,7 +35,7 @@ var SubmitSubcommand = types.Subcommand{
 								CustomID:  submitInputCustomID,
 								Label:     "What are your orders?",
 								Style:     discordgo.TextInputParagraph,
-								Required:  utils.BoolPtr(true),
+								Required:  new(true),
 								MaxLength: 4000,
 							},
 						},
@@ -146,5 +146,5 @@ func omittedCommandsMessage(count int) string {
 }
 
 func escapeInlineCode(value string) string {
-	return strings.ReplaceAll(value, "`", "\\`")
+	return strings.ReplaceAll(utils.ToTitle(value), "`", "\\`")
 }
