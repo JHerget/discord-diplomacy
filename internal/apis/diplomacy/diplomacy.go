@@ -131,7 +131,7 @@ func (a *API) DeletePlayer(gameID string, playerID string) error {
 	return nil
 }
 
-func (a *API) CreateOrder(gameID string, turnID string, req models.CreateOrderRequest) (*models.Order, error) {
+func (a *API) CreateOrder(gameID string, turnID string, req models.CreateOrderRequest) (models.CommandValidationResults, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -148,32 +148,12 @@ func (a *API) CreateOrder(gameID string, turnID string, req models.CreateOrderRe
 		return nil, decodeError(res)
 	}
 
-	var o models.Order
-	if err = json.NewDecoder(res.Body).Decode(&o); err != nil {
+	var results models.CommandValidationResults
+	if err = json.NewDecoder(res.Body).Decode(&results); err != nil {
 		return nil, err
 	}
 
-	return &o, nil
-}
-
-func (a *API) GetOrderCommands(gameID string, turnID string, orderID string) ([]models.OrderCommand, error) {
-	URL := fmt.Sprintf("%s/v1/games/%s/turns/%s/orders/%s/commands", a.baseURL, gameID, turnID, orderID)
-	res, err := http.Get(URL)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return nil, decodeError(res)
-	}
-
-	var commands []models.OrderCommand
-	if err = json.NewDecoder(res.Body).Decode(&commands); err != nil {
-		return nil, err
-	}
-
-	return commands, nil
+	return results, nil
 }
 
 func decodeError(res *http.Response) error {

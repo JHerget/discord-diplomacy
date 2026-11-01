@@ -89,7 +89,7 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 		return cctx.BasicEphemeralResponse("Enter orders before submitting.")
 	}
 
-	order, err := API.CreateOrder(g.ID, turn.ID, models.CreateOrderRequest{
+	commands, err := API.CreateOrder(g.ID, turn.ID, models.CreateOrderRequest{
 		PlayerName: player.Name,
 		Value:      value,
 	})
@@ -97,17 +97,13 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 		return cctx.BasicEphemeralResponse(err.Error())
 	}
 
-	commands, err := API.GetOrderCommands(g.ID, turn.ID, order.ID)
-	return cctx.BasicEphemeralResponse(submissionResponse(turn.Name(), commands, err))
+	return cctx.BasicEphemeralResponse(submissionResponse(turn.Name(), commands))
 }
 
-func submissionResponse(turnName string, commands []models.OrderCommand, commandErr error) string {
+func submissionResponse(turnName string, commands models.CommandValidationResults) string {
 	response := fmt.Sprintf("Orders submitted for %s.", turnName)
-	if commandErr != nil {
-		return response + "\n\nYour order formatting could not be checked."
-	}
 
-	invalid := make([]models.OrderCommand, 0)
+	invalid := make(models.CommandValidationResults, 0)
 	for _, command := range commands {
 		if !command.Valid {
 			invalid = append(invalid, command)
@@ -117,10 +113,13 @@ func submissionResponse(turnName string, commands []models.OrderCommand, command
 		return response
 	}
 
-	response += "\n\nThe formatting of these commands was not recognized:"
+	response += "\n\nThere were validation errors with the following commands:"
 	included := 0
 	for i, command := range invalid {
 		entry := fmt.Sprintf("\n- %s", escapeInlineCode(command.Value))
+		if command.Error != "" {
+			entry += fmt.Sprintf(" (%s)", command.Error)
+		}
 		remaining := len(invalid) - i - 1
 		candidate := response + entry
 		if remaining > 0 {

@@ -7,12 +7,6 @@ type Order struct {
 	Value       string `json:"value"`
 }
 
-type OrderCommand struct {
-	PlayerName string `json:"playerName"`
-	Value      string `json:"value"`
-	Valid      bool   `json:"valid"`
-}
-
 type CreateOrderRequest struct {
 	PlayerName string `json:"playerName"`
 	Value      string `json:"value"`
