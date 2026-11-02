@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"discord-diplomacy/internal/apis/diplomacy/models"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -30,7 +29,7 @@ func (a *API) GetGame(gameID string) (*models.Game, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return nil, errors.New(res.Status)
+		return nil, fmt.Errorf("%s", res.Status)
 	}
 
 	var g models.Game
@@ -50,7 +49,7 @@ func (a *API) GetBoard(gameID string) ([]byte, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return nil, errors.New(res.Status)
+		return nil, fmt.Errorf("%s", res.Status)
 	}
 
 	body, err := io.ReadAll(res.Body)
@@ -162,8 +161,8 @@ func decodeError(res *http.Response) error {
 		return err
 	}
 	if body.Message == "" {
-		return errors.New(res.Status)
+		return fmt.Errorf("%s", res.Status)
 	}
 
-	return errors.New(body.Message)
+	return fmt.Errorf("%s", body.Message)
 }

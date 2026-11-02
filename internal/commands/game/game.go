@@ -1,7 +1,6 @@
 package game
 
 import (
-	"errors"
 	"fmt"
 
 	"discord-diplomacy/internal/interactions"
@@ -40,7 +39,7 @@ func (c Command) Register(registry *interactions.Registry) error {
 func (c Command) Handle(cctx *types.CommandContext) error {
 	options := cctx.Interaction.ApplicationCommandData().Options
 	if len(options) != 1 {
-		return errors.New("game command requires exactly one subcommand")
+		return fmt.Errorf("game command requires exactly one subcommand")
 	}
 
 	option := options[0]

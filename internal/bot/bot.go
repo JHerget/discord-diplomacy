@@ -27,7 +27,7 @@ func New(cfg config.Config, logger *slog.Logger, modules ...interactions.Module)
 	registry := interactions.NewRegistry()
 	for _, module := range modules {
 		if module == nil {
-			return nil, errors.New("interaction module cannot be nil")
+			return nil, fmt.Errorf("interaction module cannot be nil")
 		}
 		if err := module.Register(registry); err != nil {
 			return nil, fmt.Errorf("register interaction module: %w", err)

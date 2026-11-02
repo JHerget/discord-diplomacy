@@ -1,9 +1,9 @@
 package models
 
 const (
-	ProvidenceOcean   ProvidenceType = "ocean"
-	ProvidenceCoastal ProvidenceType = "coastal"
-	ProvidenceInland  ProvidenceType = "inland"
+	ProvinceOcean   ProvinceType = "ocean"
+	ProvinceCoastal ProvinceType = "coastal"
+	ProvinceInland  ProvinceType = "inland"
 )
 
 const (
@@ -18,6 +18,6 @@ const (
 	WestCoast  Coast = "wc"
 )
 
-type ProvidenceType string
+type ProvinceType string
 type UnitType string
 type Coast string
