@@ -151,12 +151,14 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 	}
 
 	game, err := API.CreateGame(models.CreateGameRequest{
-		ExternalID:    &channelID,
-		MapID:         "6956498133c5739468982b62",
-		DaysPerTurn:   daysPerTurn,
-		TurnStartHour: startHour,
-		Timezone:      timezoneOffset,
-		StartDate:     int(startTime.UTC().Unix()),
+		ExternalID:        &channelID,
+		MapID:             "6956498133c5739468982b62",
+		DaysPerTurn:       daysPerTurn,
+		TurnStartHour:     startHour,
+		Timezone:          timezoneOffset,
+		StartDate:         int(startTime.UTC().Unix()),
+		RandomAssignments: true,
+		PlayerCount:       7,
 	})
 	if err != nil {
 		return cctx.BasicEphemeralResponse(err.Error())

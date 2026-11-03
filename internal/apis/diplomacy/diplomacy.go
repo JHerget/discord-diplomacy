@@ -155,6 +155,26 @@ func (a *API) CreateOrder(gameID string, turnID string, req models.CreateOrderRe
 	return results, nil
 }
 
+func (a *API) GetPlayers(gameID string) ([]models.Player, error) {
+	URL := fmt.Sprintf("%s/v1/games/%s/players", a.baseURL, gameID)
+	res, err := http.Get(URL)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, decodeError(res)
+	}
+
+	var results []models.Player
+	if err = json.NewDecoder(res.Body).Decode(&results); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
 func decodeError(res *http.Response) error {
 	var body models.Error
 	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {

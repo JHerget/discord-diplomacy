@@ -14,9 +14,11 @@ import (
 )
 
 const (
-	submitModalCustomID = "orders:submit"
-	submitInputCustomID = "orders:value"
-	maxResponseLength   = 2000
+	submitModalCustomID        = "orders:submit"
+	greatPowerInputCustomID    = "orders:great-power"
+	submitInputCustomID        = "orders:value"
+	unavailableGreatPowerValue = "unavailable"
+	maxResponseLength          = 2000
 )
 
 var SubmitSubcommand = types.Subcommand{
@@ -29,6 +31,17 @@ var SubmitSubcommand = types.Subcommand{
 				CustomID: submitModalCustomID,
 				Title:    "Submit Orders",
 				Components: []discordgo.MessageComponent{
+					discordgo.Label{
+						Label: "Great Power",
+						Component: discordgo.SelectMenu{
+							CustomID:    greatPowerInputCustomID,
+							Placeholder: "Select a Great Power",
+							MinValues:   new(1),
+							MaxValues:   1,
+							Required:    new(true),
+							Options:     greatPowerSelectOptions(cctx),
+						},
+					},
 					discordgo.ActionsRow{
 						Components: []discordgo.MessageComponent{
 							discordgo.TextInput{
@@ -65,8 +78,7 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 		return cctx.BasicEphemeralResponse("The current game is not in progress.")
 	}
 
-	player, err := g.FindPlayerByUserID(userID)
-	if err != nil {
+	if _, err := g.FindPlayerByUserID(userID); err != nil {
 		return cctx.BasicEphemeralResponse("You are not in the active game.")
 	}
 
@@ -75,7 +87,7 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 		return cctx.BasicEphemeralResponse("The current game has no turns in progress.")
 	}
 
-	values := interactions.TextInputValues(cctx.Interaction.ModalSubmitData())
+	values := interactions.ModalValues(cctx.Interaction.ModalSubmitData())
 
 	orders := strings.FieldsFunc(values[submitInputCustomID], func(r rune) bool {
 		return r == '\r' || r == '\n'
@@ -90,7 +102,7 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 	}
 
 	commands, err := API.CreateOrder(g.ID, turn.ID, models.CreateOrderRequest{
-		PlayerName: player.Name,
+		PlayerName: values[greatPowerInputCustomID],
 		Value:      value,
 	})
 	if err != nil {
@@ -98,6 +110,49 @@ func (c Command) Submit(cctx *types.CommandContext) error {
 	}
 
 	return cctx.BasicEphemeralResponse(submissionResponse(turn.Name(), commands))
+}
+
+func greatPowerSelectOptions(cctx *types.CommandContext) []discordgo.SelectMenuOption {
+	options := make([]discordgo.SelectMenuOption, 0)
+
+	if cctx.ActiveGame != nil {
+		API := diplomacy.NewAPI()
+
+		allPlayers, err := API.GetPlayers(*cctx.ActiveGame)
+		userID, ok := cctx.InteractionUserID()
+		if err == nil && ok {
+			for _, player := range allPlayers {
+				if player.UserID == nil || *player.UserID != userID {
+					continue
+				}
+				if player.IsPlaying == false {
+					continue
+				}
+
+				options = append(options, discordgo.SelectMenuOption{
+					Label:   player.Name,
+					Value:   player.Name,
+					Default: false,
+				})
+			}
+		}
+	}
+
+	switch len(options) {
+	case 0:
+		return []discordgo.SelectMenuOption{
+			{
+				Label:   "No Great Powers available",
+				Value:   unavailableGreatPowerValue,
+				Default: true,
+			},
+		}
+	case 1:
+		options[0].Default = true
+		return options
+	default:
+		return options
+	}
 }
 
 func submissionResponse(turnName string, commands models.CommandValidationResults) string {
