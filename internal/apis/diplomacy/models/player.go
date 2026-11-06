@@ -8,6 +8,7 @@ type Player struct {
 	IsPlaying bool    `json:"isPlaying"`
 }
 
-type CreatePlayerRequest struct {
-	UserID *string `json:"userId"`
+type CreatePlayersRequest struct {
+	UserID      string   `json:"userId"`
+	PlayerNames []string `json:"playerNames"`
 }

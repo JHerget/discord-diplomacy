@@ -33,7 +33,11 @@ func (c Command) Register(registry *interactions.Registry) error {
 		return err
 	}
 
-	return registry.AddModal(createModalCustomID, c)
+	if err := registry.AddModal(createModalCustomID, c); err != nil {
+		return err
+	}
+
+	return registry.AddModal(joinModalCustomID, joinModalSubmitter{})
 }
 
 func (c Command) Handle(cctx *types.CommandContext) error {

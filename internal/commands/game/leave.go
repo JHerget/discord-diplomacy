@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"strings"
 
 	"discord-diplomacy/internal/apis/diplomacy"
 	"discord-diplomacy/internal/types"
@@ -26,6 +27,7 @@ var LeaveSubcommand = types.Subcommand{
 			return cctx.BasicEphemeralResponse(err.Error())
 		}
 
+		names := make([]string, 0)
 		for _, player := range game.Players {
 			if player.UserID == nil || *player.UserID != userID {
 				continue
@@ -35,10 +37,14 @@ var LeaveSubcommand = types.Subcommand{
 				return cctx.BasicEphemeralResponse(err.Error())
 			}
 
-			if game.ExternalID != nil {
-				cctx.BasicChannelResponse(*game.ExternalID, fmt.Sprintf("%s (%s) left the game.", cctx.InteractionUserName(), player.Name))
-			}
+			names = append(names, player.Name)
+		}
 
+		if len(names) > 0 {
+			if game.ExternalID != nil {
+				playerNames := strings.Join(names, "/")
+				cctx.BasicChannelResponse(*game.ExternalID, fmt.Sprintf("%s (%s) left the game.", cctx.InteractionUserName(), playerNames))
+			}
 			return cctx.BasicEphemeralResponse("You left the game.")
 		}
 

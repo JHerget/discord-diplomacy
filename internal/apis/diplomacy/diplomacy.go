@@ -85,7 +85,7 @@ func (a *API) CreateGame(req models.CreateGameRequest) (*models.Game, error) {
 	return &g, nil
 }
 
-func (a *API) CreatePlayer(gameID string, req models.CreatePlayerRequest) (*models.Player, error) {
+func (a *API) CreatePlayers(gameID string, req models.CreatePlayersRequest) ([]*models.Player, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -102,12 +102,12 @@ func (a *API) CreatePlayer(gameID string, req models.CreatePlayerRequest) (*mode
 		return nil, decodeError(res)
 	}
 
-	var p models.Player
+	var p []*models.Player
 	if err = json.NewDecoder(res.Body).Decode(&p); err != nil {
 		return nil, err
 	}
 
-	return &p, nil
+	return p, nil
 }
 
 func (a *API) DeletePlayer(gameID string, playerID string) error {
