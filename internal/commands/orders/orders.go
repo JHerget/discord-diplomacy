@@ -17,6 +17,7 @@ func New() Command {
 	return Command{
 		subcommands: types.NewSubcommandMap([]types.Subcommand{
 			SubmitSubcommand,
+			ViewSubcommand,
 		}),
 	}
 }
